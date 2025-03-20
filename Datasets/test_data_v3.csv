@@ -1,0 +1,101 @@
+ExperienceYears,Education,Certifications,JobRole,RecruiterDecision,SalaryExpectation,ProjectsCount,AIScore,Skill1,Skill2,Skill3
+22,Diploma,None,Cybersecurity Analyst,Reject,93938,1,51,tensorflow,nlp,pytorch
+36,B.Sc,None,AI Researcher,Hire,67107,5,90,react,sql,c++
+26,B.Sc,AWS Certified,Software Engineer,Reject,177463,15,57,react,sql,c++
+35,PhD,Google ML,Data Scientist,Reject,69515,20,63,python,pytorch,nlp
+18,Diploma,Deep Learning Specialization,Data Scientist,Reject,179817,1,63,ethical hacking,networking,linux
+33,B.Sc,None,AI Researcher,Reject,163189,15,95,sql,react,java
+7,PhD,Google ML,AI Researcher,Hire,194612,1,54,python,pytorch,nlp
+36,PhD,AWS Certified,Cybersecurity Analyst,Reject,176340,4,53,python,pytorch,tensorflow
+18,B.Sc,AWS Certified,Cybersecurity Analyst,Reject,130388,6,90,tensorflow,nlp,pytorch
+22,PhD,AWS Certified,Data Scientist,Hire,124459,6,95,pytorch,nlp,tensorflow
+14,M.Sc,None,Software Engineer,Hire,71132,1,58,nlp,tensorflow,python
+31,B.Sc,None,AI Researcher,Hire,102290,2,92,ethical hacking,networking,linux
+3,Diploma,Google ML,Software Engineer,Hire,122571,2,74,nlp,tensorflow,python
+35,B.Sc,None,Cybersecurity Analyst,Hire,50776,18,91,nlp,tensorflow,python
+36,M.Sc,None,Software Engineer,Hire,196915,7,76,tensorflow,nlp,pytorch
+7,PhD,None,Data Scientist,Hire,107848,12,83,tensorflow,nlp,pytorch
+16,PhD,AWS Certified,AI Researcher,Reject,116392,2,51,python,pytorch,tensorflow
+32,Diploma,None,Cybersecurity Analyst,Reject,112130,9,99,react,sql,c++
+20,M.Sc,Deep Learning Specialization,AI Researcher,Reject,145101,7,71,python,pytorch,nlp
+24,Diploma,None,Software Engineer,Hire,141557,12,99,python,pytorch,tensorflow
+23,PhD,Deep Learning Specialization,Cybersecurity Analyst,Reject,51441,17,86,python,pytorch,tensorflow
+24,M.Sc,Google ML,Cybersecurity Analyst,Hire,157387,19,100,python,pytorch,nlp
+23,Diploma,AWS Certified,Cybersecurity Analyst,Reject,129048,14,61,ethical hacking,cybersecurity,linux
+36,PhD,AWS Certified,Data Scientist,Reject,112869,2,90,python,pytorch,nlp
+5,Diploma,Google ML,Software Engineer,Reject,69549,8,78,ethical hacking,cybersecurity,linux
+12,Diploma,None,Cybersecurity Analyst,Reject,147572,12,86,python,pytorch,nlp
+4,B.Sc,Deep Learning Specialization,Software Engineer,Hire,181296,7,52,tensorflow,nlp,pytorch
+28,M.Sc,AWS Certified,Cybersecurity Analyst,Hire,120774,5,66,ethical hacking,networking,linux
+26,Diploma,None,Cybersecurity Analyst,Reject,55241,11,56,nlp,tensorflow,python
+25,Diploma,Deep Learning Specialization,Data Scientist,Hire,131296,0,76,deep learning,python,sql
+18,PhD,AWS Certified,Software Engineer,Hire,61588,5,60,ethical hacking,networking,linux
+24,M.Sc,AWS Certified,AI Researcher,Hire,195336,7,80,deep learning,python,sql
+38,PhD,None,Data Scientist,Reject,47842,14,95,python,pytorch,tensorflow
+26,B.Sc,AWS Certified,Software Engineer,Hire,53739,9,60,react,sql,c++
+21,M.Sc,AWS Certified,Data Scientist,Hire,86178,15,76,deep learning,python,sql
+26,M.Sc,Google ML,Software Engineer,Hire,160349,20,57,pytorch,nlp,tensorflow
+16,PhD,Deep Learning Specialization,Software Engineer,Hire,43919,2,50,sql,react,java
+17,PhD,AWS Certified,Cybersecurity Analyst,Hire,91672,0,79,python,pytorch,nlp
+34,PhD,Google ML,Software Engineer,Hire,60178,1,97,ethical hacking,cybersecurity,linux
+1,Diploma,Google ML,AI Researcher,Hire,145748,4,68,nlp,tensorflow,python
+16,Diploma,None,Software Engineer,Reject,80120,1,88,python,pytorch,nlp
+1,PhD,AWS Certified,AI Researcher,Reject,178345,8,58,pytorch,nlp,tensorflow
+17,B.Sc,Deep Learning Specialization,Data Scientist,Hire,97465,8,70,ethical hacking,cybersecurity,linux
+31,Diploma,Google ML,Cybersecurity Analyst,Reject,196078,10,95,python,pytorch,nlp
+23,PhD,AWS Certified,AI Researcher,Reject,163525,11,82,nlp,tensorflow,python
+26,PhD,AWS Certified,Cybersecurity Analyst,Reject,113790,20,84,deep learning,python,sql
+2,PhD,Google ML,AI Researcher,Reject,81851,4,69,sql,react,java
+11,B.Sc,Deep Learning Specialization,Data Scientist,Hire,117498,17,54,nlp,tensorflow,python
+1,M.Sc,AWS Certified,Software Engineer,Hire,164097,16,81,deep learning,python,sql
+22,M.Sc,Deep Learning Specialization,Data Scientist,Hire,114932,17,91,tensorflow,nlp,pytorch
+33,B.Sc,Deep Learning Specialization,Data Scientist,Hire,65401,7,97,sql,react,java
+13,M.Sc,Google ML,Data Scientist,Hire,77250,9,63,python,pytorch,tensorflow
+26,PhD,Google ML,Cybersecurity Analyst,Reject,187838,10,60,deep learning,python,sql
+29,B.Sc,AWS Certified,Software Engineer,Reject,131714,8,66,react,sql,c++
+28,M.Sc,None,Cybersecurity Analyst,Hire,193869,2,94,sql,react,java
+38,Diploma,Google ML,Data Scientist,Hire,181830,3,55,nlp,tensorflow,python
+34,M.Sc,AWS Certified,Cybersecurity Analyst,Hire,162030,5,99,ethical hacking,networking,linux
+19,PhD,AWS Certified,Software Engineer,Reject,118719,19,74,react,sql,c++
+13,B.Sc,AWS Certified,Cybersecurity Analyst,Reject,171264,7,79,python,pytorch,tensorflow
+3,B.Sc,AWS Certified,Data Scientist,Hire,80442,0,80,sql,react,java
+38,PhD,Google ML,AI Researcher,Hire,74002,18,87,ethical hacking,networking,linux
+18,B.Sc,Google ML,Cybersecurity Analyst,Hire,44318,10,92,nlp,tensorflow,python
+24,B.Sc,Google ML,Cybersecurity Analyst,Reject,177781,17,61,pytorch,nlp,tensorflow
+34,M.Sc,None,Cybersecurity Analyst,Reject,163838,4,91,tensorflow,nlp,pytorch
+17,PhD,Google ML,AI Researcher,Hire,151233,10,94,python,pytorch,tensorflow
+29,PhD,None,AI Researcher,Hire,139654,7,65,sql,react,java
+11,M.Sc,Google ML,Data Scientist,Reject,194413,17,82,deep learning,python,sql
+22,B.Sc,Google ML,Data Scientist,Reject,64069,8,56,python,pytorch,tensorflow
+13,M.Sc,None,Data Scientist,Hire,135978,16,67,deep learning,python,sql
+18,Diploma,None,Data Scientist,Hire,187202,18,74,nlp,tensorflow,python
+24,Diploma,None,AI Researcher,Reject,102389,19,72,sql,react,java
+30,PhD,AWS Certified,Software Engineer,Reject,84246,13,56,tensorflow,nlp,pytorch
+2,B.Sc,AWS Certified,Cybersecurity Analyst,Hire,184882,1,80,nlp,tensorflow,python
+5,M.Sc,None,Cybersecurity Analyst,Hire,193795,3,86,react,sql,c++
+17,B.Sc,Deep Learning Specialization,Cybersecurity Analyst,Hire,189536,11,86,deep learning,python,sql
+17,M.Sc,AWS Certified,AI Researcher,Reject,93095,11,75,pytorch,nlp,tensorflow
+12,M.Sc,Deep Learning Specialization,Cybersecurity Analyst,Hire,115632,13,88,ethical hacking,cybersecurity,linux
+8,Diploma,AWS Certified,Data Scientist,Reject,162031,5,98,ethical hacking,networking,linux
+26,Diploma,None,AI Researcher,Reject,172761,4,86,ethical hacking,networking,linux
+36,PhD,AWS Certified,Data Scientist,Reject,176914,0,53,pytorch,nlp,tensorflow
+26,B.Sc,AWS Certified,AI Researcher,Reject,105051,1,67,tensorflow,nlp,pytorch
+30,M.Sc,None,AI Researcher,Hire,115172,6,63,ethical hacking,networking,linux
+20,Diploma,Google ML,Software Engineer,Hire,152443,3,85,ethical hacking,networking,linux
+21,Diploma,Google ML,Software Engineer,Hire,189291,13,60,python,pytorch,nlp
+14,M.Sc,AWS Certified,Software Engineer,Reject,82114,19,87,react,sql,c++
+24,B.Sc,AWS Certified,Software Engineer,Hire,114114,15,51,python,pytorch,nlp
+4,B.Sc,None,Software Engineer,Hire,44790,12,82,pytorch,nlp,tensorflow
+38,B.Sc,Google ML,AI Researcher,Reject,45288,12,79,ethical hacking,cybersecurity,linux
+3,B.Sc,Deep Learning Specialization,Software Engineer,Hire,69847,1,61,ethical hacking,networking,linux
+2,PhD,Google ML,Software Engineer,Reject,80386,16,78,ethical hacking,cybersecurity,linux
+14,B.Sc,Deep Learning Specialization,Software Engineer,Reject,87697,15,61,python,pytorch,nlp
+6,PhD,None,AI Researcher,Reject,138051,18,62,deep learning,python,sql
+22,M.Sc,Google ML,AI Researcher,Reject,82341,11,93,tensorflow,nlp,pytorch
+33,M.Sc,Deep Learning Specialization,Cybersecurity Analyst,Reject,81802,5,53,sql,react,java
+11,M.Sc,Deep Learning Specialization,Cybersecurity Analyst,Hire,175986,11,100,tensorflow,nlp,pytorch
+38,M.Sc,Deep Learning Specialization,AI Researcher,Reject,43698,0,54,react,sql,c++
+13,B.Sc,Google ML,AI Researcher,Reject,47751,16,96,pytorch,nlp,tensorflow
+2,Diploma,AWS Certified,Cybersecurity Analyst,Reject,59255,9,98,nlp,tensorflow,python
+34,B.Sc,Google ML,Data Scientist,Reject,72132,7,61,react,sql,c++
+19,M.Sc,None,Data Scientist,Hire,181433,2,73,tensorflow,nlp,pytorch
