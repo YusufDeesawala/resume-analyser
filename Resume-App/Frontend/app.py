@@ -7,7 +7,7 @@ from catboost import CatBoostClassifier
 app = Flask(__name__)
 
 # Load the trained CatBoost model
-model_path = "best_resume_model.pkl"  # Ensure this file is in your project folder
+model_path = "models/catboost_model_1.pkl"  # Ensure this file is in your project folder
 model = pickle.load(open(model_path, "rb"))
 
 # Define categories for categorical features (ensure same order as training)
