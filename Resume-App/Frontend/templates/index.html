@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Resume Analyzer</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/ICON.ico') }}" type="image/x-icon">
+<!--
+
+Template 2097 Pop
+
+https://www.tooplate.com/view/2097-pop
+
+-->
+    <!-- load CSS -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300">  <!-- Google web font "Open Sans" -->
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fontawesome/css/fontawesome-all.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='slick/slick.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='slick/slick-theme.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/tooplate-style.css') }}">
+    
+    <script>document.documentElement.className="js";var supportsCssVars=function(){var e,t=document.createElement("style");return t.innerHTML="root: { --tmp-var: bold; }",document.head.appendChild(t),e=!!(window.CSS&&window.CSS.supports&&window.CSS.supports("font-weight","var(--tmp-var)")),t.parentNode.removeChild(t),e};supportsCssVars()||alert("Please view this in a modern browser such as latest version of Chrome or Microsoft Edge.");</script>
+    
+    
+</head>
+
+<body>
+    <div id="tm-bg"></div>
+    <div id="tm-wrap">
+        <div class="tm-main-content">
+            <div class="container tm-site-header-container">
+                <div class="row">
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-md-col-xl-6 mb-md-0 mb-sm-4 mb-4 tm-site-header-col">
+                        <div class="tm-site-header text-center">
+                            <h1 class="mb-4">AI-Powered Resume Analyzer</h1>
+                            <img src="{{ url_for('static', filename='img/underline.png') }}" class="img-fluid mb-4">
+                            <p class="text-center" style="max-width: 600px; margin: 0 auto; line-height: 1.6;">
+                                Analyze your resume with AI and get instant feedback on your hiring potential. 
+                                Optimize your skills, experience, and qualifications for better career opportunities.
+                            </p>        
+                        </div>
+                        
+                    </div>
+                    <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6">
+                        <div class="content">
+                            <div class="grid">
+                                <div class="grid__item" id="home-link">
+                                    <div class="product">
+                                        <div class="tm-nav-link text-center">
+                                            <i class="fas fa-home fa-3x tm-nav-icon"></i>
+                                            <span class="tm-nav-text">Welcome 🏡</span>
+                                            <div class="product__bg"></div>
+                                        </div>
+                                        <div class="product__description p-4">
+                                            <div class="row mb-4 text-center">
+                                                <div class="col-12">
+                                                    <h2 class="tm-page-title">🚀 Welcome to AI Resume Analyzer</h2>
+                                                </div>
+                                            </div>
+                                            <div class="row align-items-center">
+                                                <!-- Left Column -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center">
+                                                    <img src="{{ url_for('static', filename='img/welcome-1.jpg') }}" class="img-fluid mb-4 rounded shadow" alt="AI Resume Analyzer">
+                                                    <p class="text-justify" style="max-width: 550px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        📄 <strong>Upload your resume effortlessly</strong> and let our cutting-edge AI analyze your profile in seconds. 
+                                                        Our system scans your skills, experience, and qualifications to predict your hiring potential.
+                                                    </p>
+                                                    <p class="text-justify" style="max-width: 550px; margin: 20px auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        🔍 With advanced <strong>OCR technology</strong>, we extract key details from your resume and feed them directly into our 
+                                                        AI-powered prediction engine to provide you with <strong>instant insights</strong> on your job prospects.
+                                                    </p>
+                                                </div>
+                                                <!-- Right Column -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center">
+                                                    <p class="text-justify" style="max-width: 550px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        💡 <strong>Get personalized AI-driven suggestions</strong> tailored to your career goals. Select the company you aspire to work for,
+                                                        and our <strong>LLM-powered assistant</strong> will guide you on how to refine your resume for a perfect fit.
+                                                    </p>
+                                                    <p class="text-justify" style="max-width: 550px; margin: 20px auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        💼 Stay ahead in your job search! Explore the <strong>latest job openings</strong> from top companies and gain insights into what recruiters 
+                                                        are looking for in ideal candidates. <strong>Your next big opportunity is just a click away!</strong>
+                                                    </p>
+                                                    <img src="{{ url_for('static', filename='img/welcome-2.jpg') }}" class="img-fluid rounded shadow" alt="Job Opportunities">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="grid__item active" id="resume-analyzer">
+                                    <div class="product">
+                                        <div class="tm-nav-link">
+                                            <i class="fas fa-briefcase fa-3x tm-nav-icon"></i>
+                                            <span class="tm-nav-text">Resume Analyzer</span>
+                                            <div class="product__bg"></div>
+                                        </div>
+                                        <div class="product__description">
+                                            <div class="p-sm-4 p-2">
+                                                <h2 class="tm-page-title">Analyze Your Resume</h2>
+                                
+                                                <form action="/predict" method="post">
+                                                    <label for="experience">Experience (Years):</label>
+                                                    <input type="number" name="experience" required class="form-control"><br>
+                                
+                                                    <label for="education">Education:</label>
+                                                    <select name="education" class="form-control">
+                                                        {% for edu in education_levels %}
+                                                            <option value="{{ edu }}">{{ edu }}</option>
+                                                        {% endfor %}
+                                                    </select><br>
+                                
+                                                    <label for="certification">Certifications:</label>
+                                                    <select name="certification" class="form-control">
+                                                        {% for cert in certifications %}
+                                                            <option value="{{ cert }}">{{ cert }}</option>
+                                                        {% endfor %}
+                                                    </select><br>
+                                
+                                                    <label for="job_role">Job Role:</label>
+                                                    <select name="job_role" class="form-control">
+                                                        {% for role in job_roles %}
+                                                            <option value="{{ role }}">{{ role }}</option>
+                                                        {% endfor %}
+                                                    </select><br>
+                                
+                                                    <label for="salary_expectation">Salary Expectation:</label>
+                                                    <input type="number" name="salary_expectation" required class="form-control"><br>
+                                
+                                                    <label for="projects_count">Projects Count:</label>
+                                                    <input type="number" name="projects_count" required class="form-control"><br>
+                                
+                                                    <label for="ai_score">AI Score:</label>
+                                                    <input type="number" name="ai_score" required class="form-control"><br>
+                                
+                                                    <label for="skill1">Skill 1:</label>
+                                                    <select name="skill1" class="form-control">
+                                                        {% for skill in skills %}
+                                                            <option value="{{ skill }}">{{ skill }}</option>
+                                                        {% endfor %}
+                                                    </select><br>
+                                
+                                                    <label for="skill2">Skill 2:</label>
+                                                    <select name="skill2" class="form-control">
+                                                        {% for skill in skills %}
+                                                            <option value="{{ skill }}">{{ skill }}</option>
+                                                        {% endfor %}
+                                                    </select><br>
+                                
+                                                    <label for="skill3">Skill 3:</label>
+                                                    <select name="skill3" class="form-control">
+                                                        {% for skill in skills %}
+                                                            <option value="{{ skill }}">{{ skill }}</option>
+                                                        {% endfor %}
+                                                    </select><br>
+                                
+                                                    <input type="submit" value="Analyze Resume" class="btn btn-primary">
+                                                </form>
+                                                
+                                                {% if prediction %}
+                                                    <h3 class="mt-3">Prediction Result:</h3>
+                                                    <p>The recruiter decision is: <strong>{{ prediction }}</strong></p>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid__item" id="home-link">
+                                    <div class="product">
+                                        <div class="tm-nav-link text-center">
+                                            <i class="fas fa-cogs fa-3x tm-nav-icon"></i>
+                                            <span class="tm-nav-text">Resume Extractor</span>
+                                            <div class="product__bg"></div>
+                                        </div>
+                                        <div class="product__description p-4">
+                                            <div class="row mb-4 text-center">
+                                                <div class="col-12">
+                                                    <h2 class="tm-page-title">🚀 Welcome to AI Resume Analyzer</h2>
+                                                </div>
+                                            </div>
+                                            <div class="row align-items-center">
+                                                <!-- Left Column -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center">
+                                                    <img src="{{ url_for('static', filename='img/welcome-1.jpg') }}" class="img-fluid mb-4 rounded shadow" alt="AI Resume Analyzer">
+                                                    <p class="text-justify" style="max-width: 550px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        📄 <strong>Upload your resume effortlessly</strong> and let our cutting-edge AI analyze your profile in seconds. 
+                                                        Our system scans your skills, experience, and qualifications to predict your hiring potential.
+                                                    </p>
+                                                    <p class="text-justify" style="max-width: 550px; margin: 20px auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        🔍 With advanced <strong>OCR technology</strong>, we extract key details from your resume and feed them directly into our 
+                                                        AI-powered prediction engine to provide you with <strong>instant insights</strong> on your job prospects.
+                                                    </p>
+                                                </div>
+                                                <!-- Right Column -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center">
+                                                    <p class="text-justify" style="max-width: 550px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        💡 <strong>Get personalized AI-driven suggestions</strong> tailored to your career goals. Select the company you aspire to work for,
+                                                        and our <strong>LLM-powered assistant</strong> will guide you on how to refine your resume for a perfect fit.
+                                                    </p>
+                                                    <p class="text-justify" style="max-width: 550px; margin: 20px auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        💼 Stay ahead in your job search! Explore the <strong>latest job openings</strong> from top companies and gain insights into what recruiters 
+                                                        are looking for in ideal candidates. <strong>Your next big opportunity is just a click away!</strong>
+                                                    </p>
+                                                    <img src="{{ url_for('static', filename='img/welcome-2.jpg') }}" class="img-fluid rounded shadow" alt="Job Opportunities">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="grid__item" id="home-link">
+                                    <div class="product">
+                                        <div class="tm-nav-link text-center">
+                                            <i class="fas fa-bell fa-3x tm-nav-icon"></i>
+
+
+                                            <span class="tm-nav-text">Job Recommendation</span>
+                                            <div class="product__bg"></div>
+                                        </div>
+                                        <div class="product__description p-4">
+                                            <div class="row mb-4 text-center">
+                                                <div class="col-12">
+                                                    <h2 class="tm-page-title">🚀 Welcome to AI Resume Analyzer</h2>
+                                                </div>
+                                            </div>
+                                            <div class="row align-items-center">
+                                                <!-- Left Column -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center">
+                                                    <img src="{{ url_for('static', filename='img/welcome-1.jpg') }}" class="img-fluid mb-4 rounded shadow" alt="AI Resume Analyzer">
+                                                    <p class="text-justify" style="max-width: 550px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        📄 <strong>Upload your resume effortlessly</strong> and let our cutting-edge AI analyze your profile in seconds. 
+                                                        Our system scans your skills, experience, and qualifications to predict your hiring potential.
+                                                    </p>
+                                                    <p class="text-justify" style="max-width: 550px; margin: 20px auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        🔍 With advanced <strong>OCR technology</strong>, we extract key details from your resume and feed them directly into our 
+                                                        AI-powered prediction engine to provide you with <strong>instant insights</strong> on your job prospects.
+                                                    </p>
+                                                </div>
+                                                <!-- Right Column -->
+                                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center">
+                                                    <p class="text-justify" style="max-width: 550px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        💡 <strong>Get personalized AI-driven suggestions</strong> tailored to your career goals. Select the company you aspire to work for,
+                                                        and our <strong>LLM-powered assistant</strong> will guide you on how to refine your resume for a perfect fit.
+                                                    </p>
+                                                    <p class="text-justify" style="max-width: 550px; margin: 20px auto; line-height: 1.8; font-size: 1.1rem;">
+                                                        💼 Stay ahead in your job search! Explore the <strong>latest job openings</strong> from top companies and gain insights into what recruiters 
+                                                        are looking for in ideal candidates. <strong>Your next big opportunity is just a click away!</strong>
+                                                    </p>
+                                                    <img src="{{ url_for('static', filename='img/welcome-2.jpg') }}" class="img-fluid rounded shadow" alt="Job Opportunities">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                
+
+                                                                
+                                <div class="grid__item" id="team-link">
+                                    <div class="product">
+                                        <div class="tm-nav-link">
+                                            <i class="fas fa-users fa-3x tm-nav-icon"></i>
+                                            <span class="tm-nav-text">Our Team</span>
+                                            <div class="product__bg"></div>
+                                        </div>                                     
+                                        <div class="product__description">
+                                            <div class="row mt-5">
+                                                <!-- Mustafa A. -->
+                                                <div class="col-sm-12 col-md-4 col-lg-4 text-center">
+                                                    <img src="{{ url_for('static', filename='img/Mustafa.jpeg') }}" class="mb-3" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;" alt="Mustafa A">
+                                                    <h4>Mustafa A.</h4>
+                                                    <p><strong>Role:</strong> Frontend Developer, Backend Developer, Machine Learning Engineer</p>
+                                                    <p class="text-justify">Mustafa is a versatile developer skilled in frontend and backend technologies, with expertise in machine learning. He is passionate about creating seamless user experiences while harnessing the power of AI and data science to build intelligent systems.</p>
+                                                </div>
+                                                <!-- Yusuf Z. -->
+                                                <div class="col-sm-12 col-md-4 col-lg-4 text-center">
+                                                    <img src="{{ url_for('static', filename='img/Yusuf.jpeg') }}" class="mb-3" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;" alt="Mustafa A">
+                                                    <h4>Yusuf Z.</h4>
+                                                    <p><strong>Role:</strong> Backend Developer, Machine Learning Engineer</p>
+                                                    <p class="text-justify">Yusuf specializes in backend development and machine learning engineering. With a strong background in server-side technologies and AI, he is focused on optimizing performance and creating robust, scalable systems.</p>
+                                                </div>
+                                                <!-- Surya -->
+                                                <div class="col-sm-12 col-md-4 col-lg-4 text-center">
+                                                    <img src="{{ url_for('static', filename='img/surya.jpg') }}" class="mb-3" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;" alt="Mustafa A">
+                                                    <h4>Surya</h4>
+                                                    <p><strong>Role:</strong> Frontend Engineer</p>
+                                                    <p class="text-justify">Surya is a talented frontend engineer who brings creative designs to life. With a keen eye for detail and a passion for crafting user-friendly interfaces, Surya ensures that the user experience is intuitive and visually appealing.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="grid__item">
+                                    <div class="product">
+                                        <div class="tm-nav-link">
+                                            <i class="fas fa-comments fa-3x tm-nav-icon"></i>
+                                            <span class="tm-nav-text">Contact</span>
+                                            <div class="product__bg"></div>             
+                                        </div>                                                              
+                                        <div class="product__description">
+                                            <div class="pt-sm-4 pb-sm-4 pl-sm-5 pr-sm-5 pt-2 pb-2 pl-3 pr-3">
+                                                <div class="row mb-3">
+                                                    <div class="col-12">
+                                                        <h2 class="tm-page-title">Contact Us</h2>        
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-4">
+                                                    <div class="col-12">
+                                                        <p>Lorem ipsum dolor site amet, consectetur adipiscing elit. Aliquam interdum, nisl sed faucibus tempor, massa velit laoreet ipsum, et faucibus sapien magna at enim. Suspendisse a dictum tortor, vel rhoncus libero.</p>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <form action="index.html" method="post" class="contact-form">
+                                                            <div class="row">
+                                                                <div class="form-group col-md-6 col-lg-6 col-xl-6">
+                                                                  <input type="text" id="contact_name" name="contact_name" class="form-control" placeholder="Name"  required/>
+                                                                </div>
+                                                                <div class="form-group col-md-6 col-lg-6 col-xl-6 tm-col-email">
+                                                                  <input type="email" id="contact_email" name="contact_email" class="form-control" placeholder="Email"  required/>
+                                                                </div>
+                                                            </div>                                                        
+                                                            <div class="form-group">
+                                                              <textarea id="contact_message" name="contact_message" class="form-control" rows="9" placeholder="Message" required></textarea>
+                                                            </div>
+                                                            <button type="submit" class="btn btn-primary tm-btn-submit">Submit</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                        </div>                       
+                    </div>
+                </div>                
+            </div>
+            <footer>
+                <p class="small tm-copyright-text" style="padding-top: 10px;">
+                    Made with <i class="fas fa-heart"></i> by Team Strawhats.
+                </p>
+            </footer>
+            
+            
+        </div> <!-- .tm-main-content -->  
+    </div>
+    <!-- load JS -->
+    <script src="{{ url_for('static', filename='js/jquery-3.2.1.slim.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='slick/slick.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/anime.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <script>
+    
+    document.addEventListener("DOMContentLoaded", function () {
+        // Check if there is a prediction result
+        var predictionExists = "{{ prediction }}" !== "";
+        if (predictionExists) {
+            // Open the Resume Analyzer div and scroll into view
+            var resumeAnalyzer = document.getElementById("resume-analyzer");
+            if (resumeAnalyzer) {
+                resumeAnalyzer.classList.add("active");
+                resumeAnalyzer.scrollIntoView({ behavior: "smooth" });
+            }
+        }
+    });
+
+
+
+        function setupFooter() {
+            var pageHeight = $('.tm-site-header-container').height() + $('footer').height() + 100;
+
+            var main = $('.tm-main-content');
+
+            if($(window).height() < pageHeight) {
+                main.addClass('tm-footer-relative');
+            }
+            else {
+                main.removeClass('tm-footer-relative');   
+            }
+        }
+
+        /* DOM is ready
+        ------------------------------------------------*/
+        $(function(){
+
+            setupFooter();
+
+            $(window).resize(function(){
+                setupFooter();
+            });
+
+            $('.tm-current-year').text(new Date().getFullYear());  // Update year in copyright           
+        });
+
+    </script>             
+
+</body>
+</html>
