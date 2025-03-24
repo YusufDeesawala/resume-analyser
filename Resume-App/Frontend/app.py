@@ -61,7 +61,7 @@ def predict():
             prediction = 'Hire'
         else:
             prediction = 'Reject'
-
+ 
         return render_template('index.html', prediction=prediction, education_levels=education_levels, certifications=certifications, job_roles=job_roles, skills=skills)
 
 if __name__ == '__main__':
