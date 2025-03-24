@@ -41,13 +41,13 @@ def predict():
 
         # Prepare input data in model format
         input_data = pd.DataFrame([{
-            'Experience (Years)': experience,
+            'ExperienceYears': experience,
             'Education': education,
             'Certifications': certification,
-            'Job Role': job_role,
-            'Salary Expectation ($)': salary_expectation,
-            'Projects Count': projects_count,
-            'AI Score (0-100)': ai_score,
+            'JobRole': job_role,
+            'SalaryExpectation': salary_expectation,
+            'ProjectsCount': projects_count,
+            'AIScore': ai_score,
             'Skill1': skill1,
             'Skill2': skill2,
             'Skill3': skill3
