@@ -1,0 +1,6 @@
+flask
+catboost
+google-search-results
+serpapi
+pandas
+numpy
