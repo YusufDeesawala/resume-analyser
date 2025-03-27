@@ -2,9 +2,12 @@ import os
 import json
 import requests
 from text_extraction import extract_text_from_pdf
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # Load API key from environment variable (safer than hardcoding)
-API_KEY = "AIzaSyCwFzKMYFOQG__sr86s2bDJ9ZmIdzlUTVw"  # Set this in your terminal or environment
+API_KEY = os.getenv('GEMINI_API_KEY')  # Set this in your terminal or environment
 if not API_KEY:
     raise ValueError("API key not found. Set GEMINI_API_KEY as an environment variable.")
 
@@ -36,7 +39,7 @@ Extract the following details from the given resume text and return the output a
 - **Skill1, Skill2, Skill3**: Top three skills.
 
 ### Resume Content:
-
+{resume_text}
 
 Return the extracted data **only** in valid JSON format.
 """
@@ -68,7 +71,7 @@ try:
             json.dump(parsed_json, f, indent=4)
         print("\nData saved to resume_analysis.json")
 
-    except json.JSONDecodeError:
+    except :
         print("Error: The API did not return valid JSON. Here is the raw response:")
         print(generated_text)
 
