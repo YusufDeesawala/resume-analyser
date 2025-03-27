@@ -3,7 +3,15 @@ import pickle
 import pandas as pd
 import numpy as np
 from serpapi import GoogleSearch
+import requests
+import json
+import os
+import pytesseract
+from pdf2image import convert_from_path
 from catboost import CatBoostClassifier
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = Flask(__name__)
 
@@ -17,9 +25,38 @@ certifications = ['None', 'Deep Learning Specialization', 'AWS Certified', 'Goog
 job_roles = ['AI Researcher', 'Cybersecurity Analyst', 'Data Scientist', 'Software Engineer']
 skills = ['sql', 'python', 'tensorflow', 'pytorch', 'cybersecurity', 'ethical hacking', 'networking', 'java', 'react', 'deep learning', 'c', 'machine learning', 'linux', 'nlp']
 
+
+UPLOAD_FOLDER = 'uploads'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+
+# Set upload folder in the Flask app config
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Load API key from environment variable (safer than hardcoding)
+API_KEY = os.getenv("GEMINI_API_KEY")  # Set this in your terminal or environment
+if not API_KEY:
+    raise ValueError("API key not found. Set GEMINI_API_KEY as an environment variable.")
+
+# Gemini API URL
+API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
+
+
+
 # Function to encode categorical values the same way as training
 def encode_category(value, category_list):
     return category_list.index(value) if value in category_list else -1  # -1 for unseen values
+
+# Function to extract text from a PDF file using OCR
+def extract_text_from_pdf(pdf_path):
+    images = convert_from_path(pdf_path)
+    
+    extracted_text = ""
+    for i, image in enumerate(images):
+        text = pytesseract.image_to_string(image)
+        extracted_text += f"\n--- Page {i+1} ---\n{text}\n"
+    
+    return extracted_text
+
 
 @app.route('/')
 def home():
@@ -28,6 +65,10 @@ def home():
 @app.route('/job-search')
 def job():
     return render_template('Job.html')
+
+@app.route('/resume')   
+def resume():
+    return render_template('Resume_Extraction.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -81,7 +122,7 @@ def get_google_jobs():
         "engine": "google_jobs",
         "q": f"{query} {location}",
         "hl": "en",
-        "api_key": "cc27bf84cc4bbe79fbf83665e2858f342355264165984777af0b8b009d9943dd"
+        "api_key": os.getenv("SERPAPI_API_KEY")
     }
     
     try:
@@ -124,6 +165,151 @@ def get_google_jobs():
             'error': str(e),
             'message': 'Failed to fetch job results'
         }), 500
+    
+
+@app.route('/upload_resume', methods=['POST'])
+def upload_resume():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file part"}), 400
+    
+    file = request.files['file']
+    target_company = request.form.get('target_company', '')
+    target_role = request.form.get('target_role', '')
+    
+    if file.filename == '':
+        return jsonify({"error": "No selected file"}), 400
+    
+    if file and file.filename.endswith('.pdf'):
+        file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        file.save(file_path)
+        
+        try:
+            resume_text = extract_text_from_pdf(file_path)
+            
+            if not resume_text.strip():
+                return jsonify({"error": "Extracted text is empty. Ensure the PDF contains readable text."}), 400
+            
+            prompt = f"""
+            Perform a comprehensive analysis of the resume with specific focus on the target company {target_company} and role {target_role}.
+            Resume Content:
+            {resume_text}
+            
+            Provide a detailed JSON response with the following:
+            1. **Detailed Resume Extraction**:
+            - ExperienceYears: Total years of professional experience
+            - Education: Highest educational qualification
+            - Certifications: Relevant professional certifications
+            - JobRole: Current or target professional role
+            - SalaryExpectation: Expected compensation
+            - ProjectsCount: Number of significant projects
+            - AIScore: Comprehensive resume quality score (0-100)
+            - Skill1, Skill2, Skill3: Top technical and soft skills
+            
+            2. **Company-Specific Recommendations**:
+            Generate a comprehensive, structured roadmap for improving the candidate's profile specifically for {target_role} at {target_company}
+            
+            3. **Structured Recommendations Format**:
+            Provide recommendations as a nested JSON object with the following structure:
+            - TechnicalSkillGaps: List of missing technical skills
+            - DSARecommendations: 
+                * ImportanceLevel: Numeric score of DSA importance
+                * ProblemDifficulty: Recommended problem-solving levels
+                * StudyResources: Top recommended learning platforms
+            - ProjectEnhancement: 
+                * MissingProjectTypes: Types of projects to build
+                * PortfolioStrategy: Specific project recommendations
+            - SoftSkillDevelopment: Key areas of improvement
+            - CareerRoadmap: 
+                * ShortTermGoals: 6-month development plan
+                * LongTermGoals: 2-year career progression
+            - AdditionalCredentials: 
+                * Certifications: Recommended certifications
+                * Courses: Online learning suggestions
+            
+            Ensure recommendations are:
+            - Specific to {target_role} at {target_company}
+            - Actionable and motivational
+            - Aligned with industry best practices
+            
+            Return ONLY a valid, comprehensive JSON object capturing all requested details.
+
+
+
+            give me all the possible recommendations for the resume 
+
+            4. Improve the resume quality by providing the following details:
+            - Then inside this provide me all the possible recommendations for the resume that has provided that how can it be improved and whad extra can also be done
+            """
+            
+            # Prepare API payload
+            payload = {
+                "contents": [{
+                    "parts": [{
+                        "text": prompt
+                    }]
+                }]
+            }
+            
+            # Send request to AI API
+            headers = {"Content-Type": "application/json"}
+            try:
+                response = requests.post(API_URL, json=payload, headers=headers)
+                response.raise_for_status()
+                
+                # Extract and parse response
+                response_data = response.json()
+                generated_text = response_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "{}")
+                
+                # Clean and parse JSON
+                generated_text = generated_text.strip("```json").strip("```")
+                parsed_json = json.loads(generated_text)
+                
+                # Validate and structure the response
+                result = {
+                    # Basic Resume Details
+                    "ExperienceYears": parsed_json.get("ExperienceYears", 0),
+                    "Education": parsed_json.get("Education", "Not provided"),
+                    "Certifications": parsed_json.get("Certifications", []),
+                    "JobRole": parsed_json.get("JobRole", "Not provided"),
+                    "SalaryExpectation": parsed_json.get("SalaryExpectation", "Not provided"),
+                    "ProjectsCount": parsed_json.get("ProjectsCount", 0),
+                    "AIScore": parsed_json.get("AIScore", 0),
+                    
+                    # Top Skills
+                    "Skill1": parsed_json.get("Skill1", "N/A"),
+                    "Skill2": parsed_json.get("Skill2", "N/A"),
+                    "Skill3": parsed_json.get("Skill3", "N/A"),
+                    
+                    # Detailed Recommendations
+                    "TechnicalSkillGaps": parsed_json.get("TechnicalSkillGaps", []),
+                    "DSARecommendations": parsed_json.get("DSARecommendations", {}),
+                    "ProjectEnhancement": parsed_json.get("ProjectEnhancement", {}),
+                    "SoftSkillDevelopment": parsed_json.get("SoftSkillDevelopment", []),
+                    "CareerRoadmap": parsed_json.get("CareerRoadmap", {}),
+                    "AdditionalCredentials": parsed_json.get("AdditionalCredentials", {})
+                }
+                
+                return jsonify(result)
+            
+            except json.JSONDecodeError as json_err:
+                print(f"JSON Decode Error: {json_err}")
+                return jsonify({
+                    "error": "Failed to parse AI-generated response",
+                    "details": str(json_err)
+                }), 500
+            
+            except Exception as api_err:
+                print(f"API Request Error: {api_err}")
+                return jsonify({
+                    "error": "Error processing AI recommendations",
+                    "details": str(api_err)
+                }), 500
+        
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500
+    
+    return jsonify({"error": "Invalid file format. Please upload a PDF."}), 400
+
 
 if __name__ == '__main__':
     app.run(debug=True)

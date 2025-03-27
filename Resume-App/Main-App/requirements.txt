@@ -4,3 +4,7 @@ google-search-results
 serpapi
 pandas
 numpy
+python-dotenv
+pytesseract
+pdf2image
+requests

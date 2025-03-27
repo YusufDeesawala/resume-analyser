@@ -193,46 +193,24 @@ https://www.tooplate.com/view/2097-pop
 
                                 <div class="grid__item" id="home-link">
                                     <div class="product">
-                                        <div class="tm-nav-link text-center">
-                                            <i class="fas fa-cogs fa-3x tm-nav-icon"></i>
-                                            <span class="tm-nav-text">Resume Extractor</span>
+                                        <div class="tm-nav-link text-center" id="Resume-Extraction">
+                                            <i class="fas fa-exclamation-triangle fa-3x tm-nav-icon"></i>
+                                            <span class="tm-nav-text">Resume Extraction</span>
                                             <div class="product__bg"></div>
                                         </div>
                                         <div class="product__description p-4">
                                             <div class="row mb-4 text-center">
                                                 <div class="col-12">
-                                                    <h2 class="tm-page-title">🚀 Welcome to AI Resume Analyzer</h2>
+                                                    <h2 class="tm-page-title">🔍 Opening the ExtractionPage</h2>
                                                 </div>
                                             </div>
                                             <div class="row align-items-center">
-                                                <!-- Left Column -->
-                                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center">
-                                                    <img src="{{ url_for('static', filename='img/welcome-1.jpg') }}" class="img-fluid mb-4 rounded shadow" alt="AI Resume Analyzer">
-                                                    <p class="text-justify" style="max-width: 550px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem;">
-                                                        📄 <strong>Upload your resume effortlessly</strong> and let our cutting-edge AI analyze your profile in seconds. 
-                                                        Our system scans your skills, experience, and qualifications to predict your hiring potential.
-                                                    </p>
-                                                    <p class="text-justify" style="max-width: 550px; margin: 20px auto; line-height: 1.8; font-size: 1.1rem;">
-                                                        🔍 With advanced <strong>OCR technology</strong>, we extract key details from your resume and feed them directly into our 
-                                                        AI-powered prediction engine to provide you with <strong>instant insights</strong> on your job prospects.
-                                                    </p>
-                                                </div>
-                                                <!-- Right Column -->
-                                                <div class="col-sm-12 col-md-6 col-lg-6 col-xl-6 text-center">
-                                                    <p class="text-justify" style="max-width: 550px; margin: 0 auto; line-height: 1.8; font-size: 1.1rem;">
-                                                        💡 <strong>Get personalized AI-driven suggestions</strong> tailored to your career goals. Select the company you aspire to work for,
-                                                        and our <strong>LLM-powered assistant</strong> will guide you on how to refine your resume for a perfect fit.
-                                                    </p>
-                                                    <p class="text-justify" style="max-width: 550px; margin: 20px auto; line-height: 1.8; font-size: 1.1rem;">
-                                                        💼 Stay ahead in your job search! Explore the <strong>latest job openings</strong> from top companies and gain insights into what recruiters 
-                                                        are looking for in ideal candidates. <strong>Your next big opportunity is just a click away!</strong>
-                                                    </p>
-                                                    <img src="{{ url_for('static', filename='img/welcome-2.jpg') }}" class="img-fluid rounded shadow" alt="Job Opportunities">
-                                                </div>
+
                                             </div>
                                         </div>
                                     </div>
                                 </div>
+                                
                                 <div class="grid__item" id="home-link">
                                     <div class="product">
                                         <div class="tm-nav-link text-center" id="job-recommendation">
@@ -281,8 +259,8 @@ https://www.tooplate.com/view/2097-pop
                                                 </div>
                                                 <!-- Surya -->
                                                 <div class="col-sm-12 col-md-4 col-lg-4 text-center">
-                                                    <img src="{{ url_for('static', filename='img/surya.jpg') }}" class="mb-3" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;" alt="Mustafa A">
-                                                    <h4>Surya</h4>
+                                                    <img src="{{ url_for('static', filename='img/Surya.jpeg') }}" class="mb-3" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;" alt="Mustafa A">
+                                                    <h4>Soorya</h4>
                                                     <p><strong>Role:</strong> Frontend Engineer</p>
                                                     <p class="text-justify">Surya is a talented frontend engineer who brings creative designs to life. With a keen eye for detail and a passion for crafting user-friendly interfaces, Surya ensures that the user experience is intuitive and visually appealing.</p>
                                                 </div>
@@ -412,6 +390,25 @@ https://www.tooplate.com/view/2097-pop
             setTimeout(function () {
                 // Update the URL without reloading the page (SPA)
                 window.history.pushState({}, "", "/job-search");
+    
+                // Reload the page to reflect the new URL and load the appropriate content
+                window.location.reload();
+    
+            }, 500); // Match the timeout duration to the animation duration (0.5s in this case)
+        });
+    </script>
+
+    <script>
+                // Capture the click on the 'Resume-Extraction' div
+            document.getElementById("Resume-Extraction").addEventListener("click", function () {
+            // Animate transition (optional)
+            document.body.style.transition = "opacity 0.5s ease-in-out";
+            document.body.style.opacity = 0;
+    
+            // Wait for the animation to finish before updating the URL and showing content
+            setTimeout(function () {
+                // Update the URL without reloading the page (SPA)
+                window.history.pushState({}, "", "/resume");
     
                 // Reload the page to reflect the new URL and load the appropriate content
                 window.location.reload();
