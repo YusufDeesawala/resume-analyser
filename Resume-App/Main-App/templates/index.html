@@ -113,79 +113,22 @@ https://www.tooplate.com/view/2097-pop
                                     </div>
                                 </div>
                                 
-                                <div class="grid__item active" id="resume-analyzer">
+
+                                <div class="grid__item" id="home-link">
                                     <div class="product">
-                                        <div class="tm-nav-link">
+                                        <div class="tm-nav-link text-center" id="Resume-Analyzer">
                                             <i class="fas fa-briefcase fa-3x tm-nav-icon"></i>
                                             <span class="tm-nav-text">Resume Analyzer</span>
                                             <div class="product__bg"></div>
                                         </div>
-                                        <div class="product__description">
-                                            <div class="p-sm-4 p-2">
-                                                <h2 class="tm-page-title">Analyze Your Resume</h2>
-                                
-                                                <form action="/predict" method="post">
-                                                    <label for="experience">Experience (Years):</label>
-                                                    <input type="number" name="experience" required class="form-control"><br>
-                                
-                                                    <label for="education">Education:</label>
-                                                    <select name="education" class="form-control">
-                                                        {% for edu in education_levels %}
-                                                            <option value="{{ edu }}">{{ edu }}</option>
-                                                        {% endfor %}
-                                                    </select><br>
-                                
-                                                    <label for="certification">Certifications:</label>
-                                                    <select name="certification" class="form-control">
-                                                        {% for cert in certifications %}
-                                                            <option value="{{ cert }}">{{ cert }}</option>
-                                                        {% endfor %}
-                                                    </select><br>
-                                
-                                                    <label for="job_role">Job Role:</label>
-                                                    <select name="job_role" class="form-control">
-                                                        {% for role in job_roles %}
-                                                            <option value="{{ role }}">{{ role }}</option>
-                                                        {% endfor %}
-                                                    </select><br>
-                                
-                                                    <label for="salary_expectation">Salary Expectation:</label>
-                                                    <input type="number" name="salary_expectation" required class="form-control"><br>
-                                
-                                                    <label for="projects_count">Projects Count:</label>
-                                                    <input type="number" name="projects_count" required class="form-control"><br>
-                                
-                                                    <label for="ai_score">AI Score:</label>
-                                                    <input type="number" name="ai_score" required class="form-control"><br>
-                                
-                                                    <label for="skill1">Skill 1:</label>
-                                                    <select name="skill1" class="form-control">
-                                                        {% for skill in skills %}
-                                                            <option value="{{ skill }}">{{ skill }}</option>
-                                                        {% endfor %}
-                                                    </select><br>
-                                
-                                                    <label for="skill2">Skill 2:</label>
-                                                    <select name="skill2" class="form-control">
-                                                        {% for skill in skills %}
-                                                            <option value="{{ skill }}">{{ skill }}</option>
-                                                        {% endfor %}
-                                                    </select><br>
-                                
-                                                    <label for="skill3">Skill 3:</label>
-                                                    <select name="skill3" class="form-control">
-                                                        {% for skill in skills %}
-                                                            <option value="{{ skill }}">{{ skill }}</option>
-                                                        {% endfor %}
-                                                    </select><br>
-                                
-                                                    <input type="submit" value="Analyze Resume" class="btn btn-primary">
-                                                </form>
-                                                
-                                                {% if prediction %}
-                                                    <h3 class="mt-3">Prediction Result:</h3>
-                                                    <p>The recruiter decision is: <strong>{{ prediction }}</strong></p>
-                                                {% endif %}
+                                        <div class="product__description p-4">
+                                            <div class="row mb-4 text-center">
+                                                <div class="col-12">
+                                                    <h2 class="tm-page-title">🔍 Opening the AnalyzerPage</h2>
+                                                </div>
+                                            </div>
+                                            <div class="row align-items-center">
+
                                             </div>
                                         </div>
                                     </div>
@@ -334,18 +277,6 @@ https://www.tooplate.com/view/2097-pop
     
     <script>
     
-    document.addEventListener("DOMContentLoaded", function () {
-        // Check if there is a prediction result
-        var predictionExists = "{{ prediction }}" !== "";
-        if (predictionExists) {
-            // Open the Resume Analyzer div and scroll into view
-            var resumeAnalyzer = document.getElementById("resume-analyzer");
-            if (resumeAnalyzer) {
-                resumeAnalyzer.classList.add("active");
-                resumeAnalyzer.scrollIntoView({ behavior: "smooth" });
-            }
-        }
-    });
 
 
 
@@ -415,6 +346,18 @@ https://www.tooplate.com/view/2097-pop
     
             }, 500); // Match the timeout duration to the animation duration (0.5s in this case)
         });
+    </script>
+
+    <script>
+        document.getElementById("Resume-Analyzer").addEventListener("click",function () {
+            document.body.style.transition = "opacity 0.5s ease-in-out";
+            document.body.style.opacity = 0;
+
+            setTimeout(function () {
+                window.history.pushState({}, "", "/resume-analyzer");
+                window.location.reload();
+            }, 500); // Match the timeout duration to the animation duration (0.5s in this case)
+        })
     </script>
     
 

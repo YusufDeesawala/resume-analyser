@@ -60,7 +60,7 @@ def extract_text_from_pdf(pdf_path):
 
 @app.route('/')
 def home():
-    return render_template('index.html', education_levels=education_levels, certifications=certifications, job_roles=job_roles, skills=skills)
+    return render_template('index.html')
 
 @app.route('/job-search')
 def job():
@@ -69,6 +69,36 @@ def job():
 @app.route('/resume')   
 def resume():
     return render_template('Resume_Extraction.html')
+
+@app.route('/resume-analyzer')
+def resume_analyzer():
+    return render_template('Resume_Analyzer.html',  education_levels=education_levels, certifications=certifications, job_roles=job_roles, skills=skills)
+
+@app.route('/ai-score', methods=['POST'])
+def ai_score():
+    if 'resume' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    
+    resume_file = request.files['resume']
+    
+    
+    if resume_file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+    
+    # Save the file to the specified folder
+    resume_path = os.path.join(app.config['UPLOAD_FOLDER'], resume_file.filename)
+    resume_file.save(resume_path)
+    
+    
+    return jsonify({'message': 'Resume uploaded successfully!', 'file_path': resume_path})
+    
+    try:
+        score_extraction = extract_text_from_pdf(resume_path)
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    # Getting the OCR Extraction
+
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -109,7 +139,7 @@ def predict():
         else:
             prediction = 'Reject'
  
-        return render_template('index.html', prediction=prediction, education_levels=education_levels, certifications=certifications, job_roles=job_roles, skills=skills)
+        return render_template('Resume_Analyzer.html', prediction=prediction, education_levels=education_levels, certifications=certifications, job_roles=job_roles, skills=skills)
 
 @app.route('/jobs', methods=['GET'])
 def get_google_jobs():
