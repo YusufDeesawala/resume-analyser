@@ -81,7 +81,6 @@ def ai_score():
     
     resume_file = request.files['resume']
     
-    
     if resume_file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
     
@@ -89,15 +88,50 @@ def ai_score():
     resume_path = os.path.join(app.config['UPLOAD_FOLDER'], resume_file.filename)
     resume_file.save(resume_path)
     
-    
-    return jsonify({'message': 'Resume uploaded successfully!', 'file_path': resume_path})
-    
     try:
-        score_extraction = extract_text_from_pdf(resume_path)
-
+        # Extract text from the uploaded resume file
+        resume_ai_text = extract_text_from_pdf(resume_path)
+        
+        if not resume_ai_text.strip():
+            return jsonify({'error': 'Extracted text is empty. Ensure the PDF contains readable text.'}), 400
+        
+        prompt = f"""
+        Perform a comprehensive analysis of the resume = {resume_ai_text}. and rate my resume from 0 to 100.
+        Note= Just return the number as the response no text are allowed."""
+        
+        payload = {
+                "contents": [{
+                    "parts": [{
+                        "text": prompt
+                    }]
+                }]
+            }
+            
+            # Send request to AI API
+        headers = {"Content-Type": "application/json"}
+        try:
+            response = requests.post(API_URL, json=payload, headers=headers)
+            response.raise_for_status()
+            
+            # Extract and parse response
+            response_data = response.json()
+            generated_text = response_data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "{}")
+            
+            # Clean and parse the AI score number (e.g., "75")
+            generated_text = generated_text.strip("```json").strip("```")
+            ai_score = int(generated_text)  # Assuming the response is just a number
+            
+            return jsonify(ai_score)  # Return only the AI score as a number
+        
+        except json.JSONDecodeError as json_err:
+            print(f"JSON Decode Error: {json_err}")
+            return jsonify({
+                "error": "Failed to parse AI-generated response",
+                "details": str(json_err)
+            }), 500
+        
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
-    # Getting the OCR Extraction
+        return jsonify({'error': f'An error occurred: {str(e)}'}), 500
 
 
 @app.route('/predict', methods=['POST'])
