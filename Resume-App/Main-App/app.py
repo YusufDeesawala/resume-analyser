@@ -74,6 +74,10 @@ def resume():
 def resume_analyzer():
     return render_template('Resume_Analyzer.html',  education_levels=education_levels, certifications=certifications, job_roles=job_roles, skills=skills)
 
+@app.route('/interview')
+def interview():
+    return render_template('Interview.html')
+
 @app.route('/ai-score', methods=['POST'])
 def ai_score():
     if 'resume' not in request.files:
