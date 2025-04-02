@@ -172,7 +172,7 @@ def predict():
         prediction = model.predict(input_data)[0]
         
         
-        if prediction == 1:
+        if prediction == 0:
             prediction = 'Hire'
         else:
             prediction = 'Reject'
