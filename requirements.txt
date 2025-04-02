@@ -1,7 +1,8 @@
 openai-whisper 
 PyAudio 
-python-multipart
-uvicorn 
-fastapi
+python-multipart 
+flask
+flask_cors
 dotenv
 google-genai
+gtts
