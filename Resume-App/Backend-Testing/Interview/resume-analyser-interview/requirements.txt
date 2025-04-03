@@ -1,7 +1,0 @@
-openai-whisper 
-PyAudio 
-python-multipart
-uvicorn 
-fastapi
-dotenv
-google-genai

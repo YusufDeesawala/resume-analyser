@@ -8,3 +8,8 @@ python-dotenv
 pytesseract
 pdf2image
 requests
+google-genai
+openai-whisper
+gTTS
+flask_cors
+uuid

@@ -1,0 +1,10 @@
+openai-whisper 
+PyAudio 
+python-multipart 
+flask
+flask_cors
+dotenv
+google-genai
+gtts
+edge_tts
+asyncio
