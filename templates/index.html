@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,41 +11,53 @@
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            background-color: #121212;
+            color: #ffffff;
         }
+
         .chat-container {
-            border: 1px solid #ddd;
+            border: 1px solid #333;
             border-radius: 8px;
             height: 400px;
             overflow-y: auto;
             margin-bottom: 20px;
             padding: 10px;
+            background-color: #1e1e1e;
         }
+
         .message {
             margin-bottom: 10px;
             padding: 8px 12px;
             border-radius: 6px;
             max-width: 70%;
         }
+
         .user-message {
-            background-color: #e3f2fd;
+            background-color: #3a3f5c;
             margin-left: auto;
             text-align: right;
         }
+
         .bot-message {
-            background-color: #f1f1f1;
+            background-color: #333;
             margin-right: auto;
         }
+
         .input-container {
             display: flex;
             margin-bottom: 20px;
         }
+
         .text-input {
             flex-grow: 1;
             padding: 10px;
-            border: 1px solid #ddd;
+            border: 1px solid #444;
             border-radius: 4px;
             margin-right: 10px;
+            background-color: #222;
+            color: #fff;
         }
+
         button {
             padding: 10px 15px;
             background-color: #4CAF50;
@@ -52,178 +65,189 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            margin-right: 5px;
         }
+
         button:disabled {
-            background-color: #cccccc;
+            background-color: #666;
         }
+
         .audio-controls {
             margin-bottom: 20px;
         }
+
         .audio-player {
             width: 100%;
+            background-color: #222;
+            color: #fff;
         }
+
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            text-align: center;
         }
+
         .reset-button {
             background-color: #f44336;
         }
-        /* Loading overlay styles */
+
         .loading-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(0, 0, 0, 0.9);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 1000;
         }
-        .loading-spinner {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #4CAF50;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
+
+        .loading-bars {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
         }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+
+        .bar {
+            width: 10px;
+            height: 30px;
+            margin: 0 5px;
+            background-color: white;
+            border-radius: 5px;
+            animation: growShrink 1.2s infinite ease-in-out;
         }
+
+        .bar:nth-child(1) {
+            animation-delay: 0s;
+        }
+
+        .bar:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .bar:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes growShrink {
+
+            0%,
+            100% {
+                height: 30px;
+            }
+
+            50% {
+                height: 50px;
+            }
+        }
+
         .loading-text {
             font-size: 20px;
             font-weight: bold;
-            color: #333;
+            color: white;
+            margin-top: 10px;
         }
+
         .main-content {
             display: none;
+            margin-top: 40px;
+        }
+
+        .header {
+            text-align: center;
+        }
+
+        .reset-button {
+            background-color: #f44336;
         }
     </style>
 </head>
+
 <body>
-    <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay">
-        <div class="loading-spinner"></div>
+        <div class="loading-bars">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
         <div class="loading-text">Setting things up...</div>
     </div>
 
-    <!-- Main Content -->
     <div id="mainContent" class="main-content">
         <div class="header">
             <h1>Interview Chatbot</h1>
             <button id="resetChat" class="reset-button">Reset Interview</button>
         </div>
-        
-        <!-- Chat Display -->
-        <div class="chat-container" id="chatContainer">
-            <!-- Messages will be displayed here -->
-        </div>
-        
-        <!-- Text Input -->
+        <div class="chat-container" id="chatContainer"></div>
         <div class="input-container">
             <input type="text" id="textInput" class="text-input" placeholder="Type your message...">
             <button id="sendMessage">Send</button>
         </div>
-        
-        <!-- Voice Controls -->
         <div class="audio-controls">
             <button id="startRecording">Start Recording</button>
             <button id="stopRecording" disabled>Stop Recording</button>
         </div>
-        
-        <!-- Audio Player -->
         <audio id="audioPlayback" controls class="audio-player"></audio>
     </div>
-    
     <script>
         // Initial load of chat history
-        window.onload = async function() {
+        window.onload = async function () {
             await loadChatHistory();
         };
-        
+
         // Load chat history from server
         async function loadChatHistory() {
             try {
                 const response = await fetch("/chat-history");
+                if (!response.ok) throw new Error("Failed to load history");
                 const messages = await response.json();
-                
                 const chatContainer = document.getElementById("chatContainer");
                 chatContainer.innerHTML = '';
-                
-                // If no visible messages yet, we need to start the interview
                 if (messages.length === 0) {
                     await startNewInterview();
                 } else {
-                    // Display existing messages
                     messages.forEach(msg => {
                         const isUser = msg.role === "user";
                         addMessageToChat(msg.parts[0].text, isUser);
                     });
                 }
-                
-                // Scroll to bottom
                 chatContainer.scrollTop = chatContainer.scrollHeight;
-                
-                // Hide loading overlay and show main content
                 document.getElementById("loadingOverlay").style.display = "none";
                 document.getElementById("mainContent").style.display = "block";
             } catch (error) {
-                console.error("Error loading chat history:", error);
-                // Show error in UI or retry
-                
-                // Even on error, hide the loading screen after a timeout
-                setTimeout(() => {
-                    document.getElementById("loadingOverlay").style.display = "none";
-                    document.getElementById("mainContent").style.display = "block";
-                }, 5000);
+                document.querySelector(".loading-text").textContent = `Error: ${error.message}. Retrying...`;
+                setTimeout(loadChatHistory, 2000); // Retry after 2 seconds
             }
         }
-        
+
         // Start a new interview by sending an empty message to trigger the first question
         async function startNewInterview() {
             try {
-                const response = await fetch("/text-input", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ message: "Start interview" })
-                });
-                
-                const data = await response.json();
-                
-                // Add bot response to chat (first interview question)
+                const response = await fetch("/start-interview", { method: "POST" });
+                if (!response.ok) throw new Error("Failed to start interview");
+                const data = await response.json(); 
                 addMessageToChat(data.response, false);
-                
-                // Play audio
                 if (data.audio_url) {
                     let audio = document.getElementById("audioPlayback");
                     audio.src = data.audio_url;
                     audio.play();
                 }
-                
-                // Hide loading overlay and show main content
                 document.getElementById("loadingOverlay").style.display = "none";
                 document.getElementById("mainContent").style.display = "block";
             } catch (error) {
-                console.error("Error starting interview:", error);
-                
-                // Even on error, hide the loading screen after a timeout
+                addMessageToChat(`Error starting interview: ${error.message}`, false);
                 setTimeout(() => {
                     document.getElementById("loadingOverlay").style.display = "none";
                     document.getElementById("mainContent").style.display = "block";
                 }, 5000);
             }
         }
-        
+
         // Add message to chat display
         function addMessageToChat(text, isUser) {
             const chatContainer = document.getElementById("chatContainer");
@@ -234,64 +258,44 @@
             chatContainer.appendChild(messageDiv);
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-        
+
         // Send text message
-        document.getElementById("sendMessage").addEventListener("click", async () => {
-            const textInput = document.getElementById("textInput");
-            const userMessage = textInput.value.trim();
-            
-            if (userMessage) {
-                // Add user message to chat
-                addMessageToChat(userMessage, true);
-                
-                // Clear input
-                textInput.value = "";
-                
-                // Send to server
-                try {
-                    const response = await fetch("/text-input", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({ message: userMessage })
-                    });
-                    
-                    const data = await response.json();
-                    
-                    // Add bot response to chat
-                    addMessageToChat(data.response, false);
-                    
-                    // Play audio if available
-                    if (data.audio_url) {
-                        let audio = document.getElementById("audioPlayback");
-                        audio.src = data.audio_url;
-                        audio.play();
-                    }
-                } catch (error) {
-                    console.error("Error sending message:", error);
-                }
-            }
-        });
-        
+        document.getElementById("startRecording").addEventListener("click", async () => {
+    let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start();
+    audioChunks = [];
+    
+    document.getElementById("startRecording").textContent = "Recording...";
+    document.getElementById("startRecording").disabled = true;
+    document.getElementById("stopRecording").disabled = false;
+});
+
+document.getElementById("stopRecording").addEventListener("click", () => {
+    mediaRecorder.stop();
+    document.getElementById("startRecording").textContent = "Start Recording";
+    document.getElementById("startRecording").disabled = false;
+    document.getElementById("stopRecording").disabled = true;
+});
+
         // Allow sending with Enter key
-        document.getElementById("textInput").addEventListener("keypress", function(event) {
+        document.getElementById("textInput").addEventListener("keypress", function (event) {
             if (event.key === "Enter") {
                 document.getElementById("sendMessage").click();
             }
         });
-        
+
         // Reset chat
         document.getElementById("resetChat").addEventListener("click", async () => {
             // Show loading overlay while resetting
             document.getElementById("loadingOverlay").style.display = "flex";
             document.getElementById("mainContent").style.display = "none";
-            
+
             try {
                 const response = await fetch("/reset-chat", {
                     method: "POST"
                 });
-                
+
                 if (response.ok) {
                     // Clear chat container
                     document.getElementById("chatContainer").innerHTML = '';
@@ -300,7 +304,7 @@
                 }
             } catch (error) {
                 console.error("Error resetting chat:", error);
-                
+
                 // Hide loading screen after timeout even on error
                 setTimeout(() => {
                     document.getElementById("loadingOverlay").style.display = "none";
@@ -308,7 +312,7 @@
                 }, 5000);
             }
         });
-        
+
         // Voice recording logic
         let mediaRecorder;
         let audioChunks = [];
@@ -317,7 +321,7 @@
             mediaRecorder = new MediaRecorder(stream);
             mediaRecorder.start();
             audioChunks = [];
-            
+
             mediaRecorder.ondataavailable = event => {
                 audioChunks.push(event.data);
             };
@@ -325,22 +329,22 @@
                 let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
                 let formData = new FormData();
                 formData.append("file", audioBlob, "recording.wav");
-                
+
                 try {
                     let response = await fetch("/talk", {
                         method: "POST",
                         body: formData
                     });
-                    
+
                     // Get the transcription and response from the server
                     const data = await response.json();
-                    
+
                     // Add user message to chat
                     addMessageToChat(data.transcription, true);
-                    
+
                     // Add bot response to chat
                     addMessageToChat(data.response, false);
-                    
+
                     // Play audio response
                     let audio = document.getElementById("audioPlayback");
                     audio.src = data.audio_url;
@@ -349,7 +353,7 @@
                     console.error("Error processing audio:", error);
                 }
             };
-            
+
             document.getElementById("startRecording").disabled = true;
             document.getElementById("stopRecording").disabled = false;
         });
@@ -360,4 +364,5 @@
         });
     </script>
 </body>
+
 </html>

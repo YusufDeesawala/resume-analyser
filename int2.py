@@ -13,7 +13,6 @@ load_dotenv()
 # Load the Whisper model
 model = whisper.load_model("base")
 client = genai.Client(api_key=os.getenv("GEMINI_KEY"))
-elevenlabs_key = os.getenv("ELEVENLABS_KEY")
 
 app = Flask(__name__, template_folder="templates")
 CORS(app)
@@ -87,8 +86,28 @@ def reset_chat():
     # Reset to just the system prompt
     with open('database.json', 'w') as f:
         json.dump([SYSTEM_PROMPT], f)
-    
+        
     return jsonify({"status": "success"})
+
+@app.route('/start-interview', methods=['POST'])
+def start_interview():
+    messages = load_messages()
+    gemini_response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=messages,  # Just system prompt initially
+    )
+    response_text = gemini_response.candidates[0].content.parts[0].text
+    response_message = {"role": "model", "parts": [{"text": response_text}]}
+    save_message(response_message)
+    
+    audio_filename = f"response_{uuid.uuid4()}.mp3"
+    audio_path = os.path.join("static/audio", audio_filename)
+    text_to_speech(response_text, audio_path)
+    
+    return jsonify({
+        "response": response_text,
+        "audio_url": url_for('static', filename=f'audio/{audio_filename}')
+    })
 
 # Functions
 def transcribe_audio(file):
