@@ -27,7 +27,8 @@ def post_audio():
         return jsonify({"error": "No file uploaded"}), 400
 
     file = request.files['file']
-    user_message = transcribe_audio(file)
+    transcript_text = transcribe_audio(file)
+    user_message = {"role": "user", "parts": [{"text": transcript_text}]}
     chat_response = get_chat_response(user_message) 
     text_content = chat_response["parts"][0]["text"]
     audio_output = text_to_speech(text_content)
@@ -40,37 +41,46 @@ def transcribe_audio(file):
     file.save(filepath)
     transcript = model.transcribe(filepath)
     os.remove(filepath)  # Clean up the saved file
-    return {"role": "user", "parts": [{"text": transcript["text"]}]}
+    return transcript["text"]
 
 def get_chat_response(user_message):
     messages = load_messages()
+    
+    # Add the user message to conversation history
     messages.append(user_message)
     
+    # Get response from Gemini
     gemini_response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=messages,
     )
     
+    # Create response message
     response_message = {
         "role": "model",
         "parts": [{"text": gemini_response.text}]
     }
     
-    save_messages(user_message, response_message)
+    # Save both messages to database
+    save_message(user_message)
+    save_message(response_message)
+    
     return response_message  
 
 def load_messages():
     file = 'database.json'
     if not os.path.exists(file) or os.stat(file).st_size == 0:
-        return [{'role': 'model', "parts": [{"text":"You are interviewing the user for the Machine Learning Developer position. Ask relevant questions, if the user is able to answer that question correctly then proceed to increase the difficulty of the questions. Your name is Alex and you will refer to the user with the name resource."}]}]
+        initial_message = {'role': 'model', "parts": [{"text":"You are interviewing the user for the Machine Learning Developer position. Ask relevant questions, if the user is able to answer that question correctly then proceed to increase the difficulty of the questions. Your name is Alex and you will refer to the user with the name resource."}]}
+        with open(file, 'w') as f:
+            json.dump([initial_message], f)
+        return [initial_message]
     
     with open(file) as db_file:
         return json.load(db_file)
 
-def save_messages(user_message, model_response):
+def save_message(message):
     messages = load_messages()
-    messages.append(user_message)
-    messages.append(model_response)  
+    messages.append(message)
     
     with open('database.json', 'w') as f:
         json.dump(messages, f)
