@@ -8,76 +8,203 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #121212;
             color: #ffffff;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
         }
 
         .chat-container {
-            border: 1px solid #333;
-            border-radius: 8px;
-            height: 400px;
+            height: calc(90vh - 60px - 80px - 30px);
+            /* Fixed height: viewport - header - input area - main padding */
             overflow-y: auto;
-            margin-bottom: 20px;
-            padding: 10px;
-            display:flex;
+            /* Scroll when content overflows */
+            padding: 20px;
+            display: flex;
             flex-direction: column;
-            
             background-color: #1e1e1e;
+            margin: 0 10px;
+            border-radius: 0 0 12px 12px;
+            border: 1px solid #333;
+            border-top: none;
+            /* Scrollbar enhancements */
+            scrollbar-width: thin;
+            /* Firefox: thin scrollbar */
+            scrollbar-color: #4CAF50 #1e1e1e;
+            /* Firefox: thumb color, track color */
+        }
+
+        /* Webkit scrollbar for chat-container */
+        .chat-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .chat-container::-webkit-scrollbar-track {
+            background: #1e1e1e;
+            /* Matches background */
+            border-radius: 12px;
+        }
+
+        .chat-container::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            /* Green thumb */
+            border-radius: 12px;
+            border: 2px solid #1e1e1e;
+            /* Padding effect */
+        }
+
+        .chat-container::-webkit-scrollbar-thumb:hover {
+            background: #45a049;
+            /* Darker green on hover */
         }
 
         .message {
-            margin-bottom: 10px;
-            padding: 8px 12px;
-            border-radius: 6px;
-            max-width: 70%;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 75%;
+            word-wrap: break-word;
+            position: relative;
+            /* For positioning audio controls */
         }
 
         .user-message {
             background-color: #3a3f5c;
             margin-left: auto;
-            text-align: right;
-            
+            border-bottom-right-radius: 4px;
         }
 
         .bot-message {
-            background-color: #333;
+            background-color: #2a2a2a;
             margin-right: auto;
+            border-bottom-left-radius: 4px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .audio-controls-inline {
+            display: flex;
+            align-items: center;
+            margin-top: 8px;
+            font-size: 20px;
+        }
+
+        .audio-play-button {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            cursor: pointer;
+            padding: 0;
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .audio-play-button:focus {
+            outline: none;
+        }
+
+        .message-content {
+            margin-bottom: 8px;
+        }
+
+        .input-area {
+            position: fixed;
+            bottom: 15px;
+            left: 25px;
+            right: 25px;
+            padding: 10px 15px;
+            background-color: #1a1a1a;
+            border: 1px solid #333;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            z-index: 100;
+            max-width: 700px;
+            margin: 0 auto;
+            height: 45px;
+            /* Fixed height */
+            /* Scrollbar enhancements (in case of overflow, though unlikely here) */
+            scrollbar-width: thin;
+            /* Firefox */
+            scrollbar-color: #4CAF50 #1a1a1a;
+            /* Firefox: thumb color, track color */
+        }
+
+        /* Webkit scrollbar for input-area */
+        .input-area::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .input-area::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            /* Matches background */
+            border-radius: 12px;
+        }
+
+        .input-area::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            border-radius: 12px;
+            border: 2px solid #1a1a1a;
+        }
+
+        .input-area::-webkit-scrollbar-thumb:hover {
+            background: #45a049;
         }
 
         .input-container {
             display: flex;
             align-items: center;
-            /* Vertically align the textarea and button */
-            margin-bottom: 20px;
-            width: 100%;
-            /* Ensure it fits the parent container */
-            max-width: 800px;
-            /* Match the body’s max-width */
+            background-color: transparent;
+            border-radius: 24px;
+            padding: 0;
+            flex: 1;
+            position: relative;
         }
 
+
+
         .text-input {
-            /* Remove flex-grow to prevent excessive stretching */
-            width: 100%;
-            /* Full width of the container, but constrained */
-            max-width: 500px;
-            /* Optional: Set a max width to keep it reasonable */
-            height: 50px;
-            /* Set a reasonable initial height */
-            padding: 10px;
-            border: 1px solid #444;
-            border-radius: 4px;
-            margin-right: 10px;
-            background-color: #222;
+            flex: 1;
+            background: transparent;
+            border: none;
             color: #fff;
-            resize: vertical;
-            /* Allow vertical resizing only */
-            overflow-wrap: break-word;
-            /* Ensure text wraps */
-            box-sizing: border-box;
-            /* Include padding in width/height */
+            font-size: 14px;
+            padding: 8px;
+            min-height: 20px;
+            max-height: 80px;
+            resize: none;
+            outline: none;
+            /* Scrollbar enhancements */
+            scrollbar-width: thin;
+            /* Firefox */
+            scrollbar-color: #4CAF50 #1a1a1a;
+            /* Firefox: thumb color, track color */
+        }
+
+        .text-input::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .text-input::-webkit-scrollbar-track {
+            background: #1a1a1a;
+            /* Matches input-area background */
+            border-radius: 12px;
+        }
+
+        .text-input::-webkit-scrollbar-thumb {
+            background: #4CAF50;
+            border-radius: 12px;
+            border: 2px solid #1a1a1a;
+        }
+
+        .text-input::-webkit-scrollbar-thumb:hover {
+            background: #45a049;
         }
 
         button {
@@ -94,13 +221,53 @@
         }
 
         .audio-controls {
-            margin-bottom: 20px;
+            display: flex;
+            margin-right: 10px;
         }
 
+        .audio-controls button {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            cursor: pointer;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+
+        .audio-controls button:disabled {
+            color: #666;
+        }
+
+
+
+        .send-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+
+        .audio-player-container {
+            padding: 0 20px;
+            margin: 10px 10px 15px 10px;
+        }
+
+
+        /* Hide the original audio player */
         .audio-player {
-            width: 100%;
-            background-color: #222;
-            color: #fff;
+            display: none;
         }
 
         .header {
@@ -112,6 +279,11 @@
 
         .reset-button {
             background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
         }
 
         .loading-overlay {
@@ -175,17 +347,95 @@
             margin-top: 10px;
         }
 
+
         .main-content {
-            display: none;
-            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            /* Full viewport height */
+            position: relative;
+            padding: 15px;
+            box-sizing: border-box;
         }
 
         .header {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #1e1e1e;
+            border-bottom: 1px solid #333;
+            z-index: 10;
+            border-radius: 12px 12px 0 0;
+            margin: 0 10px;
         }
+
 
         .reset-button {
             background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+
+        /* Existing styles remain unchanged, add these at the end of your <style> tag */
+
+        .analyzing-message {
+            background-color: #2a2a2a;
+            margin-right: auto;
+            border-bottom-left-radius: 4px;
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 75%;
+            position: relative;
+            color: #ffffff;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        /* Glowing gradient effect */
+        .analyzing-text {
+            background: linear-gradient(90deg, #4CAF50, #ffffff, #4CAF50);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: gradientMove 2s linear infinite;
+        }
+
+        .analyzing-message {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Gradient animation */
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            100% {
+                background-position: 200% 50%;
+            }
+        }
+
+        /* Ellipsis animation (handled via JS, but reserve space) */
+        .ellipsis::after {
+            content: "...";
+            display: inline-block;
+            width: 1.5em;
+            text-align: left;
         }
     </style>
 </head>
@@ -206,15 +456,19 @@
             <button id="resetChat" class="reset-button">Reset Interview</button>
         </div>
         <div class="chat-container" id="chatContainer"></div>
-        <div class="input-container">
-            <textarea id="textInput" class="text-input" placeholder="Type your message..."></textarea>
-            <button id="sendMessage">Send</button>
+
+        <audio id="audioPlayback" class="audio-player"></audio>
+
+        <div class="input-area">
+            <div class="input-container">
+                <div class="audio-controls">
+                    <button id="startRecording">🎤</button>
+                    <button id="stopRecording" disabled>⏹️</button>
+                </div>
+                <textarea id="textInput" class="text-input" placeholder="Type your message..."></textarea>
+                <button id="sendMessage" class="send-button">➤</button>
+            </div>
         </div>
-        <div class="audio-controls">
-            <button id="startRecording">Start Recording</button>
-            <button id="stopRecording" disabled>Stop Recording</button>
-        </div>
-        <audio id="audioPlayback" controls class="audio-player"></audio>
     </div>
     <script>
         // Initial load of chat history
@@ -253,7 +507,7 @@
                 const response = await fetch("/start-interview", { method: "POST" });
                 if (!response.ok) throw new Error("Failed to start interview");
                 const data = await response.json();
-                addMessageToChat(data.response, false);
+                addMessageToChat(data.response, false, data.audio_url);
                 if (data.audio_url) {
                     let audio = document.getElementById("audioPlayback");
                     audio.src = data.audio_url;
@@ -269,49 +523,15 @@
                 }, 5000);
             }
         }
-
-        // Add message to chat display
-        function addMessageToChat(text, isUser) {
-            const chatContainer = document.getElementById("chatContainer");
-            const messageDiv = document.createElement("div");
-            messageDiv.classList.add("message");
-            messageDiv.classList.add(isUser ? "user-message" : "bot-message");
-            messageDiv.textContent = text;
-            // messageDiv.style.width = "auto";
-            chatContainer.appendChild(messageDiv);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-        }
-
-        // Send text message
-        document.getElementById("startRecording").addEventListener("click", async () => {
-            let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.start();
-            audioChunks = [];
-
-            document.getElementById("startRecording").textContent = "Recording...";
-            document.getElementById("startRecording").disabled = true;
-            document.getElementById("stopRecording").disabled = false;
-        });
-
-        document.getElementById("stopRecording").addEventListener("click", () => {
-            mediaRecorder.stop();
-            document.getElementById("startRecording").textContent = "Start Recording";
-            document.getElementById("startRecording").disabled = false;
-            document.getElementById("stopRecording").disabled = true;
-        });
-
-        // Allow sending with Enter key
-        document.getElementById("sendMessage").addEventListener("click", async () => {
+        // Extract send logic into a reusable function
+        async function sendMessage() {
             const textInput = document.getElementById("textInput");
             const userMessage = textInput.value.trim();
 
             if (userMessage) {
-                // Add user message to chat
-                addMessageToChat(userMessage, true);
-
-                // Clear input
-                textInput.value = "";
+                addMessageToChat(userMessage, true); // Display user message
+                textInput.value = ""; // Clear input
+                addAnalyzingMessage(); // Show "Analyzing..."
 
                 try {
                     const response = await fetch("/text-input", {
@@ -322,23 +542,211 @@
                     if (!response.ok) throw new Error("Failed to send message");
 
                     const data = await response.json();
+                    removeAnalyzingMessage(); // Remove "Analyzing..."
+                    addMessageToChat(data.response, false, data.audio_url);
 
-                    // Add bot response to chat
-                    addMessageToChat(data.response, false);
-
-                    // Play audio if available
                     if (data.audio_url) {
                         let audio = document.getElementById("audioPlayback");
                         audio.src = data.audio_url;
                         audio.play().catch(err => {
                             console.error("Audio playback error:", err);
-                            addMessageToChat("Audio playback failed. Check console for details.", false);
+                            addMessageToChat("Audio playback failed.", false);
                         });
-                    } else {
-                        console.warn("No audio URL returned");
                     }
                 } catch (error) {
                     console.error("Error sending message:", error);
+                    removeAnalyzingMessage();
+                    addMessageToChat(`Error: ${error.message}`, false);
+                }
+            }
+        }
+
+        // Send button click
+        document.getElementById("sendMessage").addEventListener("click", sendMessage);
+
+        // Enter keypress to send
+        document.getElementById("textInput").addEventListener("keydown", (event) => {
+            if (event.key === "Enter" && !event.shiftKey) { // Enter without Shift
+                event.preventDefault(); // Prevent new line
+                sendMessage(); // Trigger send
+            }
+            // Shift + Enter will still create a new line due to textarea default behavior
+        });
+        let analyzingInterval; // To store the ellipsis animation interval
+
+        function addAnalyzingMessage() {
+            const chatContainer = document.getElementById("chatContainer");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message", "bot-message", "analyzing-message");
+            messageDiv.id = "analyzing-message"; // Unique ID to remove later
+
+            const textSpan = document.createElement("span");
+            textSpan.classList.add("analyzing-text");
+            textSpan.textContent = "Analyzing";
+
+            const ellipsisSpan = document.createElement("span");
+            ellipsisSpan.classList.add("ellipsis");
+
+            messageDiv.appendChild(textSpan);
+            messageDiv.appendChild(ellipsisSpan);
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+
+            // Animate ellipsis
+            let dotCount = 0;
+            analyzingInterval = setInterval(() => {
+                dotCount = (dotCount + 1) % 4;
+                ellipsisSpan.textContent = ".".repeat(dotCount);
+            }, 300); // Adjust speed of dots
+        }
+
+        function removeAnalyzingMessage() {
+            clearInterval(analyzingInterval); // Stop ellipsis animation
+            const analyzingMsg = document.getElementById("analyzing-message");
+            if (analyzingMsg) analyzingMsg.remove();
+        }
+
+        // Add message to chat display
+        // Add message to chat display
+        function addMessageToChat(text, isUser, audioUrl = null) {
+            const chatContainer = document.getElementById("chatContainer");
+            const messageDiv = document.createElement("div");
+            messageDiv.classList.add("message");
+            messageDiv.classList.add(isUser ? "user-message" : "bot-message");
+
+            // For user messages, just add the text
+            if (isUser) {
+                messageDiv.textContent = text;
+            }
+            // For bot messages, create a structure with text and audio controls
+            else {
+                // Create content div for the text
+                const contentDiv = document.createElement("div");
+                contentDiv.classList.add("message-content");
+                contentDiv.textContent = text;
+                messageDiv.appendChild(contentDiv);
+
+                // Add audio controls if there's an audio URL
+                if (audioUrl) {
+                    const audioControls = document.createElement("div");
+                    audioControls.classList.add("audio-controls-inline");
+
+                    const playButton = document.createElement("button");
+                    playButton.classList.add("audio-play-button");
+                    playButton.innerHTML = "▶️"; // Play icon
+                    playButton.onclick = function () {
+                        const audio = document.getElementById("audioPlayback");
+
+                        // If this is a new audio or different from current
+                        if (audio.src !== audioUrl) {
+                            audio.src = audioUrl;
+                        }
+
+                        // Toggle play/pause
+                        if (audio.paused) {
+                            audio.play();
+                            playButton.innerHTML = "⏸️"; // Pause icon
+                        } else {
+                            audio.pause();
+                            playButton.innerHTML = "▶️"; // Play icon
+                        }
+                    };
+
+                    // Listen for audio end to reset play button
+                    document.getElementById("audioPlayback").onended = function () {
+                        // Reset all play buttons to play icon
+                        document.querySelectorAll(".audio-play-button").forEach(btn => {
+                            btn.innerHTML = "▶️";
+                        });
+                    };
+
+                    audioControls.appendChild(playButton);
+                    messageDiv.appendChild(audioControls);
+                }
+            }
+
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        // Send text message
+        document.getElementById("startRecording").addEventListener("click", async () => {
+            try {
+                let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                audioChunks = [];
+
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.onstop = async () => {
+                    let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                    let formData = new FormData();
+                    formData.append("file", audioBlob, "recording.wav");
+
+                    try {
+                        let response = await fetch("/talk", { method: "POST", body: formData });
+                        const data = await response.json();
+                        addMessageToChat(data.transcription, true);
+                        addMessageToChat(data.response, false, data.audio_url);
+
+                        if (data.audio_url) {
+                            let audio = document.getElementById("audioPlayback");
+                            audio.src = data.audio_url;
+                            audio.play().catch(err => console.error("Audio playback error:", err));
+                        }
+                    } catch (error) {
+                        console.error("Error processing audio:", error);
+                        addMessageToChat(`Error: ${error.message}`, false);
+                    }
+                };
+
+                document.getElementById("startRecording").textContent = "Recording...";
+                document.getElementById("startRecording").disabled = true;
+                document.getElementById("stopRecording").disabled = false;
+            } catch (error) {
+                console.error("Microphone access denied:", error);
+                addMessageToChat("Error: Microphone access denied.", false);
+            }
+        });
+        document.getElementById("stopRecording").addEventListener("click", () => {
+            mediaRecorder.stop();
+            document.getElementById("startRecording").textContent = "🎤"; // Reset to mic icon
+            document.getElementById("startRecording").disabled = false;
+            document.getElementById("stopRecording").disabled = true;
+        });
+        // Allow sending with Enter key
+        document.getElementById("sendMessage").addEventListener("click", async () => {
+            const textInput = document.getElementById("textInput");
+            const userMessage = textInput.value.trim();
+
+            if (userMessage) {
+                addMessageToChat(userMessage, true); // Display user message
+                textInput.value = ""; // Clear input
+                addAnalyzingMessage(); // Show "Analyzing..."
+
+                try {
+                    const response = await fetch("/text-input", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ message: userMessage })
+                    });
+                    if (!response.ok) throw new Error("Failed to send message");
+
+                    const data = await response.json();
+                    removeAnalyzingMessage(); // Remove "Analyzing..."
+                    addMessageToChat(data.response, false, data.audio_url);
+
+                    if (data.audio_url) {
+                        let audio = document.getElementById("audioPlayback");
+                        audio.src = data.audio_url;
+                        audio.play().catch(err => {
+                            console.error("Audio playback error:", err);
+                            addMessageToChat("Audio playback failed.", false);
+                        });
+                    }
+                } catch (error) {
+                    console.error("Error sending message:", error);
+                    removeAnalyzingMessage();
                     addMessageToChat(`Error: ${error.message}`, false);
                 }
             }
@@ -376,50 +784,46 @@
         let mediaRecorder;
         let audioChunks = [];
         document.getElementById("startRecording").addEventListener("click", async () => {
-            let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            mediaRecorder = new MediaRecorder(stream);
-            mediaRecorder.start();
-            audioChunks = [];
+            console.log("Mic button clicked!");
+            try {
+                let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                mediaRecorder = new MediaRecorder(stream);
+                mediaRecorder.start();
+                audioChunks = [];
 
-            mediaRecorder.ondataavailable = event => {
-                audioChunks.push(event.data);
-            };
-            mediaRecorder.onstop = async () => {
-                let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-                let formData = new FormData();
-                formData.append("file", audioBlob, "recording.wav");
+                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
+                mediaRecorder.onstop = async () => {
+                    let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+                    let formData = new FormData();
+                    formData.append("file", audioBlob, "recording.wav");
 
-                try {
-                    let response = await fetch("/talk", {
-                        method: "POST",
-                        body: formData
-                    });
+                    addAnalyzingMessage(); // Show "Analyzing..." after stopping
 
-                    // Get the transcription and response from the server
-                    const data = await response.json();
+                    try {
+                        let response = await fetch("/talk", { method: "POST", body: formData });
+                        const data = await response.json();
+                        removeAnalyzingMessage(); // Remove "Analyzing..."
+                        addMessageToChat(data.transcription, true);
+                        addMessageToChat(data.response, false, data.audio_url);
+                        if (data.audio_url) {
+                            let audio = document.getElementById("audioPlayback");
+                            audio.src = data.audio_url;
+                            audio.play();
+                        }
+                    } catch (error) {
+                        console.error("Error processing audio:", error);
+                        removeAnalyzingMessage();
+                        addMessageToChat(`Error: ${error.message}`, false);
+                    }
+                };
 
-                    // Add user message to chat
-                    addMessageToChat(data.transcription, true);
-
-                    // Add bot response to chat
-                    addMessageToChat(data.response, false);
-
-                    // Play audio response
-                    let audio = document.getElementById("audioPlayback");
-                    audio.src = data.audio_url;
-                    audio.play();
-                } catch (error) {
-                    console.error("Error processing audio:", error);
-                }
-            };
-
-            document.getElementById("startRecording").disabled = true;
-            document.getElementById("stopRecording").disabled = false;
-        });
-        document.getElementById("stopRecording").addEventListener("click", () => {
-            mediaRecorder.stop();
-            document.getElementById("startRecording").disabled = false;
-            document.getElementById("stopRecording").disabled = true;
+                document.getElementById("startRecording").textContent = "Recording...";
+                document.getElementById("startRecording").disabled = true;
+                document.getElementById("stopRecording").disabled = false;
+            } catch (error) {
+                console.error("Microphone error:", error.name, error.message);
+                addMessageToChat(`Error: ${error.name} - ${error.message}`, false);
+            }
         });
     </script>
 </body>
