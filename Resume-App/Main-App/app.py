@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify , url_for
 from flask_cors import CORS
 import pickle
 import pandas as pd
@@ -51,6 +51,9 @@ Whisper_Model = whisper.load_model("base")
 
 #Gemini Client
 client = genai.Client(api_key=API_KEY)
+
+os.makedirs("static/audio", exist_ok=True)
+
 
 # Define the system prompt for the interview
 SYSTEM_PROMPT = {
@@ -398,7 +401,7 @@ def upload_resume():
 
 
 # Routes For Interview Components
-#@app.route('/talk', methods=['POST'])
+@app.route('/talk', methods=['POST'])
 def post_audio():
     if 'file' not in request.files:
         return jsonify({"error": "No file uploaded"}), 400
@@ -454,8 +457,28 @@ def reset_chat():
     # Reset to just the system prompt
     with open('database.json', 'w') as f:
         json.dump([SYSTEM_PROMPT], f)
-    
+        
     return jsonify({"status": "success"})
+
+@app.route('/start-interview', methods=['POST'])
+def start_interview():
+    messages = load_messages()
+    gemini_response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=messages,  # Just system prompt initially
+    )
+    response_text = gemini_response.candidates[0].content.parts[0].text
+    response_message = {"role": "model", "parts": [{"text": response_text}]}
+    save_message(response_message)
+    
+    audio_filename = f"response_{uuid.uuid4()}.mp3"
+    audio_path = os.path.join("static/audio", audio_filename)
+    text_to_speech(response_text, audio_path)
+    
+    return jsonify({
+        "response": response_text,
+        "audio_url": url_for('static', filename=f'audio/{audio_filename}')
+    })
 
 # Functions
 def transcribe_audio(file):
