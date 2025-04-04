@@ -430,12 +430,86 @@
             }
         }
 
+        .setup-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .setup-modal-content {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            width: 300px;
+            text-align: center;
+            border: 1px solid #333;
+        }
+
+        .setup-modal-content h2 {
+            margin-top: 0;
+            color: #ffffff;
+        }
+
+        .setup-modal-content input {
+            width: 90%;
+            padding: 8px;
+            margin: 10px 0;
+            background-color: #2a2a2a;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .setup-modal-content button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .setup-modal-content button:hover {
+            background-color: #45a049;
+        }
+
+        /* Hide main content initially */
+        #mainContent {
+            display: none;
+        }
+
         /* Ellipsis animation (handled via JS, but reserve space) */
         .ellipsis::after {
             content: "...";
             display: inline-block;
             width: 1.5em;
             text-align: left;
+        }
+
+        .playback-speed-button {
+            background: none;
+            border: none;
+            color: #4CAF50;
+            cursor: pointer;
+            padding: 0;
+            margin-left: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        .playback-speed-button:focus {
+            outline: none;
         }
     </style>
 </head>
@@ -449,7 +523,15 @@
         </div>
         <div class="loading-text">Setting things up...</div>
     </div>
-
+    <!-- Setup Modal -->
+    <div id="setupModal" class="setup-modal">
+        <div class="setup-modal-content">
+            <h2>Interview Setup</h2>
+            <input type="text" id="intervieweeName" placeholder="Your Name" required>
+            <input type="text" id="interviewRole" placeholder="Role (e.g., Software Engineer)" required>
+            <button id="startInterviewBtn">Start Interview</button>
+        </div>
+    </div>
     <div id="mainContent" class="main-content">
         <div class="header">
             <h1>Interview Chatbot</h1>
@@ -472,9 +554,42 @@
     </div>
     <script>
         // Initial load of chat history
-        window.onload = async function () {
-            await loadChatHistory();
+        window.onload = function () {
+            document.getElementById("setupModal").style.display = "flex";
+            document.getElementById("loadingOverlay").style.display = "none";
         };
+        document.getElementById("startInterviewBtn").addEventListener("click", async () => {
+            const name = document.getElementById("intervieweeName").value.trim();
+            const role = document.getElementById("interviewRole").value.trim();
+
+            if (!name || !role) {
+                alert("Please enter both your name and the role you're applying for.");
+                return;
+            }
+
+            document.getElementById("setupModal").style.display = "none";
+            document.getElementById("loadingOverlay").style.display = "flex";
+            document.getElementById("loadingOverlay").querySelector(".loading-text").textContent = "Setting up interview...";
+
+            try {
+                const setupResponse = await fetch("/setup-interview", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ name, role })
+                });
+
+                if (!setupResponse.ok) throw new Error("Failed to setup interview");
+
+                await startNewInterview();
+            } catch (error) {
+                console.error("Error setting up interview:", error);
+                document.getElementById("loadingOverlay").querySelector(".loading-text").textContent = `Error: ${error.message}`;
+                setTimeout(() => {
+                    document.getElementById("loadingOverlay").style.display = "none";
+                    document.getElementById("setupModal").style.display = "flex";
+                }, 2000);
+            }
+        });
 
         // Load chat history from server
         async function loadChatHistory() {
@@ -606,61 +721,116 @@
             if (analyzingMsg) analyzingMsg.remove();
         }
 
-        // Add message to chat display
-        // Add message to chat display
+        assList.add("audio-controls-inline");
+
+        const playButton = document.createElement("button");
+        playButton.classList.add("audio-play-button");
+        playButton.innerHTML = "▶️";
+
+        const audio = document.getElementById("audioPlayback");
+        let isPlaying = false;
+
+        playButton.onclick = function () {
+            // If this is a new audio or different from current
+            if (audio.src !== audioUrl) {
+                audio.src = audioUrl;
+                audio.playbackRate = 1.0; // Reset playback rate
+                isPlaying = false;
+            }
+
+            if (!isPlaying) {
+                audio.play().then(() => {
+                    playButton.innerHTML = "⏸️";
+                    isPlaying = true;
+                }).catch(err => {
+                    console.error("Audio playback error:", err);
+                    addMessageToChat("Audio playback failed.", false);
+                });
+            } else {
+                audio.pause();
+                playButton.innerHTML = "▶️";
+                isPlaying = false;
+            }
+        };
+
+        // Reset button to play icon when audio ends
+        audio.onended = function () {
+            playButton.innerHTML = "▶️";
+            isPlaying = false;
+        };
+
         function addMessageToChat(text, isUser, audioUrl = null) {
             const chatContainer = document.getElementById("chatContainer");
             const messageDiv = document.createElement("div");
             messageDiv.classList.add("message");
             messageDiv.classList.add(isUser ? "user-message" : "bot-message");
 
-            // For user messages, just add the text
             if (isUser) {
                 messageDiv.textContent = text;
-            }
-            // For bot messages, create a structure with text and audio controls
-            else {
-                // Create content div for the text
+            } else {
                 const contentDiv = document.createElement("div");
                 contentDiv.classList.add("message-content");
                 contentDiv.textContent = text;
                 messageDiv.appendChild(contentDiv);
 
-                // Add audio controls if there's an audio URL
                 if (audioUrl) {
                     const audioControls = document.createElement("div");
                     audioControls.classList.add("audio-controls-inline");
 
                     const playButton = document.createElement("button");
                     playButton.classList.add("audio-play-button");
-                    playButton.innerHTML = "▶️"; // Play icon
-                    playButton.onclick = function () {
-                        const audio = document.getElementById("audioPlayback");
+                    playButton.innerHTML = "▶️";
 
-                        // If this is a new audio or different from current
+                    const audio = document.getElementById("audioPlayback");
+
+                    playButton.onclick = function () {
+                        // If the current audio source is different, set it and play
                         if (audio.src !== audioUrl) {
                             audio.src = audioUrl;
-                        }
-
-                        // Toggle play/pause
-                        if (audio.paused) {
-                            audio.play();
-                            playButton.innerHTML = "⏸️"; // Pause icon
+                            audio.playbackRate = 1.0; // Reset playback rate when switching audio
+                            audio.play().then(() => {
+                                playButton.innerHTML = "⏸️";
+                            }).catch(err => {
+                                console.error("Audio playback error:", err);
+                                addMessageToChat("Audio playback failed.", false);
+                            });
                         } else {
-                            audio.pause();
-                            playButton.innerHTML = "▶️"; // Play icon
+                            // If the same audio is clicked, toggle play/pause
+                            if (audio.paused) {
+                                audio.play().then(() => {
+                                    playButton.innerHTML = "⏸️";
+                                }).catch(err => {
+                                    console.error("Audio playback error:", err);
+                                    addMessageToChat("Audio playback failed.", false);
+                                });
+                            } else {
+                                audio.pause();
+                                playButton.innerHTML = "▶️";
+                            }
                         }
                     };
 
-                    // Listen for audio end to reset play button
-                    document.getElementById("audioPlayback").onended = function () {
-                        // Reset all play buttons to play icon
-                        document.querySelectorAll(".audio-play-button").forEach(btn => {
-                            btn.innerHTML = "▶️";
-                        });
+                    // Reset button to play icon when audio ends
+                    audio.onended = function () {
+                        playButton.innerHTML = "▶️";
+                    };
+
+                    // Add playback speed button
+                    const speedButton = document.createElement("button");
+                    speedButton.classList.add("playback-speed-button");
+                    speedButton.innerHTML = "1x"; // Default speed
+                    const speeds = [1.0, 1.5, 2.0]; // Available speeds
+                    let speedIndex = 0;
+
+                    speedButton.onclick = function () {
+                        speedIndex = (speedIndex + 1) % speeds.length;
+                        const newSpeed = speeds[speedIndex];
+                        audio.playbackRate = newSpeed;
+                        speedButton.innerHTML = `${newSpeed}x`;
                     };
 
                     audioControls.appendChild(playButton);
+                    audioControls.appendChild(speedButton);
                     messageDiv.appendChild(audioControls);
                 }
             }
@@ -752,33 +922,70 @@
             }
         });
 
-        // Reset chat
-        document.getElementById("resetChat").addEventListener("click", async () => {
-            // Show loading overlay while resetting
-            document.getElementById("loadingOverlay").style.display = "flex";
-            document.getElementById("mainContent").style.display = "none";
 
-            try {
-                const response = await fetch("/reset-chat", {
-                    method: "POST"
-                });
-
-                if (response.ok) {
-                    // Clear chat container
-                    document.getElementById("chatContainer").innerHTML = '';
-                    // Start a new interview
-                    await startNewInterview();
-                }
-            } catch (error) {
-                console.error("Error resetting chat:", error);
-
-                // Hide loading screen after timeout even on error
-                setTimeout(() => {
-                    document.getElementById("loadingOverlay").style.display = "none";
-                    document.getElementById("mainContent").style.display = "block";
-                }, 5000);
+        document.addEventListener("DOMContentLoaded", () => {
+            const resetButton = document.getElementById("resetChat");
+            if (!resetButton) {
+                console.error("Reset button (#resetChat) not found in DOM");
+                return;
             }
+
+            resetButton.addEventListener("click", async () => {
+                console.log("Reset Interview button clicked"); // Debug Step 1
+
+                const loadingOverlay = document.getElementById("loadingOverlay");
+                const mainContent = document.getElementById("mainContent");
+                const setupModal = document.getElementById("setupModal");
+                const chatContainer = document.getElementById("chatContainer");
+
+                if (!loadingOverlay || !mainContent || !setupModal || !chatContainer) {
+                    console.error("Missing required elements:", {
+                        loadingOverlay: !!loadingOverlay,
+                        mainContent: !!mainContent,
+                        setupModal: !!setupModal,
+                        chatContainer: !!chatContainer
+                    });
+                    return;
+                }
+
+                loadingOverlay.style.display = "flex";
+                mainContent.style.display = "none";
+                loadingOverlay.querySelector(".loading-text").textContent = "Resetting...";
+                console.log("UI updated: Loading shown, Main hidden"); // Debug Step 2
+
+                try {
+                    const response = await fetch("/reset-chat", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" }
+                    });
+                    console.log("Fetch response status:", response.status); // Debug Step 3
+
+                    if (!response.ok) {
+                        throw new Error("Reset request failed with status: " + response.status);
+                    }
+
+                    const data = await response.json();
+                    console.log("Response data:", data); // Debug Step 4
+
+                    chatContainer.innerHTML = "";
+                    console.log("Chat cleared"); // Debug Step 5
+
+                    loadingOverlay.style.display = "none";
+                    setupModal.style.display = "flex";
+                    console.log("UI updated: Loading hidden, Setup shown"); // Debug Step 6
+                } catch (error) {
+                    console.error("Reset error:", error);
+                    loadingOverlay.querySelector(".loading-text").textContent = `Error: ${error.message}`;
+                    setTimeout(() => {
+                        loadingOverlay.style.display = "none";
+                        mainContent.style.display = "block";
+                    }, 2000);
+                }
+            });
         });
+
+
+
 
         // Voice recording logic
         let mediaRecorder;
