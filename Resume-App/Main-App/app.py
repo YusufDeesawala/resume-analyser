@@ -52,7 +52,14 @@ Whisper_Model = whisper.load_model("base")
 #Gemini Client
 client = genai.Client(api_key=API_KEY)
 
-os.makedirs("static/audio", exist_ok=True)
+# Function used in interview component
+def create_system_prompt(name, role):
+    return {
+        'role': 'model',
+        "parts": [{
+            "text": f"You are interviewing {name} for the {role} position. Ask relevant questions, if the user is able to answer that question correctly then proceed to increase the difficulty of the questions. Your name is Alex and you will refer to the user as {name}."
+        }]
+    }
 
 
 # Define the system prompt for the interview
@@ -401,6 +408,46 @@ def upload_resume():
 
 
 # Routes For Interview Components
+@app.route('/setup-interview', methods=['POST'])
+def setup_interview():
+    data = request.json
+    if not data or 'name' not in data or 'role' not in data:
+        return jsonify({"error": "Name and role are required"}), 400
+    
+    name = data['name']
+    role = data['role']
+    
+    # Reset the chat with new system prompt
+    system_prompt = create_system_prompt(name, role)
+    with open('database.json', 'w') as f:
+        json.dump([system_prompt], f)
+    
+    return jsonify({"status": "success", "message": f"Interview setup for {name} as {role}"})
+
+@app.route('/start-interview', methods=['POST'])
+def start_interview():
+    messages = load_messages()
+    if not messages:
+        return jsonify({"error": "Please setup interview first with name and role"}), 400
+        
+    gemini_response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=messages,
+    )
+    response_text = gemini_response.candidates[0].content.parts[0].text
+    response_message = {"role": "model", "parts": [{"text": response_text}]}
+    save_message(response_message)
+    
+    audio_filename = f"response_{uuid.uuid4()}.mp3"
+    audio_path = os.path.join("static/audio", audio_filename)
+    text_to_speech(response_text, audio_path)
+    
+    return jsonify({
+        "response": response_text,
+        "audio_url": url_for('static', filename=f'audio/{audio_filename}')
+    })
+
+# [Rest of your existing routes remain largely the same, just updating load_messages]
 @app.route('/talk', methods=['POST'])
 def post_audio():
     if 'file' not in request.files:
@@ -412,7 +459,6 @@ def post_audio():
     chat_response = get_chat_response(user_message) 
     text_content = chat_response["parts"][0]["text"]
     
-    # Generate audio file
     audio_filename = f"response_{uuid.uuid4()}.mp3"
     audio_path = os.path.join("static/audio", audio_filename)
     text_to_speech(text_content, audio_path)
@@ -433,7 +479,6 @@ def text_input():
     chat_response = get_chat_response(user_message)
     text_content = chat_response["parts"][0]["text"]
     
-    # Generate audio file
     audio_filename = f"response_{uuid.uuid4()}.mp3"
     audio_path = os.path.join("static/audio", audio_filename)
     text_to_speech(text_content, audio_path)
@@ -445,68 +490,40 @@ def text_input():
 
 @app.route('/chat-history', methods=['GET'])
 def get_chat_history():
-    # Get all messages except the system prompt
     messages = load_messages()
-    if messages and messages[0]['role'] == 'model' and "You are interviewing the user" in messages[0]['parts'][0]['text']:
-        # Skip the system message in the displayed history
-        return jsonify(messages[1:])
-    return jsonify(messages)
+    if messages:
+        return jsonify(messages[1:])  # Skip system prompt
+    return jsonify([])
 
 @app.route('/reset-chat', methods=['POST'])
 def reset_chat():
-    # Reset to just the system prompt
-    with open('database.json', 'w') as f:
-        json.dump([SYSTEM_PROMPT], f)
-        
-    return jsonify({"status": "success"})
-
-@app.route('/start-interview', methods=['POST'])
-def start_interview():
-    messages = load_messages()
-    gemini_response = client.models.generate_content(
-        model="gemini-2.0-flash",
-        contents=messages,  # Just system prompt initially
-    )
-    response_text = gemini_response.candidates[0].content.parts[0].text
-    response_message = {"role": "model", "parts": [{"text": response_text}]}
-    save_message(response_message)
-    
-    audio_filename = f"response_{uuid.uuid4()}.mp3"
-    audio_path = os.path.join("static/audio", audio_filename)
-    text_to_speech(response_text, audio_path)
-    
-    return jsonify({
-        "response": response_text,
-        "audio_url": url_for('static', filename=f'audio/{audio_filename}')
-    })
+    return jsonify({"status": "success", "message": "Please setup new interview with name and role"})
 
 # Functions
 def transcribe_audio(file):
     filepath = f"./{file.filename}"
     file.save(filepath)
     transcript = model.transcribe(filepath)
-    os.remove(filepath)  # Clean up the saved file
+    os.remove(filepath)
     return transcript["text"]
 
 def get_chat_response(user_message):
     messages = load_messages()
+    if not messages:
+        return {"role": "model", "parts": [{"text": "Please setup interview first with name and role"}]}
     
-    # Add the user message to conversation history
     messages.append(user_message)
     
-    # Get response from Gemini
     gemini_response = client.models.generate_content(
         model="gemini-2.0-flash",
         contents=messages,
     )
     
-    # Create response message
     response_message = {
         "role": "model",
         "parts": [{"text": gemini_response.text}]
     }
     
-    # Save both messages to database
     save_message(user_message)
     save_message(response_message)
     
@@ -515,21 +532,10 @@ def get_chat_response(user_message):
 def load_messages():
     file = 'database.json'
     if not os.path.exists(file) or os.stat(file).st_size == 0:
-        # Initialize with system prompt
-        with open(file, 'w') as f:
-            json.dump([SYSTEM_PROMPT], f)
-        return [SYSTEM_PROMPT]
+        return []
     
     with open(file) as db_file:
         messages = json.load(db_file)
-        
-    # If first message is not the system prompt, add it
-    if not messages or messages[0]['role'] != 'model' or "You are interviewing the user" not in messages[0]['parts'][0]['text']:
-        messages.insert(0, SYSTEM_PROMPT)
-        # Save the updated messages
-        with open(file, 'w') as f:
-            json.dump(messages, f)
-    
     return messages
 
 def save_message(message):
