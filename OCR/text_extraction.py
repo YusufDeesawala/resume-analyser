@@ -1,7 +1,7 @@
 import requests
 from model import extract_text_from_pdf
 # Set your API key here
-API_KEY = "AIzaSyCwFzKMYFOQG__sr86s2bDJ9ZmIdzlUTVw"
+API_KEY = "your api key"
 API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
 
 pdf_path = 'resume.pdf'
