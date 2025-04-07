@@ -4,7 +4,7 @@ from model import extract_text_from_pdf
 API_KEY = "your api key"
 API_URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={API_KEY}"
 
-pdf_path = 'resume.pdf'
+pdf_path = 'path to pdf'
 
 # Define the prompt
 prompt = f'''Given to you is the entire content of a resume. I want you to extract ['ExperienceYears','Education','Certifications','JobRole','SalaryExpectation','ProjectsCount','AIScore','Skill1','Skill2','Skill3'].
