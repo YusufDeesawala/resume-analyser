@@ -1,5 +1,0 @@
-Alright Mustafa, let's dive in!
-
-**Question 1:** Imagine you're building a model to predict customer churn for a subscription service. You have access to several features, including demographics, subscription duration, usage frequency, and customer support interactions.
-
-Could you describe your approach to feature engineering for this project? Specifically, what are some new features you might create from the existing ones, and why would they be helpful in predicting churn?
