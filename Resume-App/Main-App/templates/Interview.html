@@ -841,7 +841,6 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        // Send text message
         document.getElementById("startRecording").addEventListener("click", async () => {
             try {
                 let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -924,70 +923,33 @@
             }
         });
 
+        // Reset chat
+        document.getElementById("resetChat").addEventListener("click", async () => {
+            // Show loading overlay while resetting
+            document.getElementById("loadingOverlay").style.display = "flex";
+            document.getElementById("mainContent").style.display = "none";
 
-        document.addEventListener("DOMContentLoaded", () => {
-            const resetButton = document.getElementById("resetChat");
-            if (!resetButton) {
-                console.error("Reset button (#resetChat) not found in DOM");
-                return;
+            try {
+                const response = await fetch("/reset-chat", {
+                    method: "POST"
+                });
+
+                if (response.ok) {
+                    // Clear chat container
+                    document.getElementById("chatContainer").innerHTML = '';
+                    // Start a new interview
+                    await startNewInterview();
+                }
+            } catch (error) {
+                console.error("Error resetting chat:", error);
+
+                // Hide loading screen after timeout even on error
+                setTimeout(() => {
+                    document.getElementById("loadingOverlay").style.display = "none";
+                    document.getElementById("mainContent").style.display = "block";
+                }, 5000);
             }
-
-            resetButton.addEventListener("click", async () => {
-                console.log("Reset Interview button clicked"); // Debug Step 1
-
-                const loadingOverlay = document.getElementById("loadingOverlay");
-                const mainContent = document.getElementById("mainContent");
-                const setupModal = document.getElementById("setupModal");
-                const chatContainer = document.getElementById("chatContainer");
-
-                if (!loadingOverlay || !mainContent || !setupModal || !chatContainer) {
-                    console.error("Missing required elements:", {
-                        loadingOverlay: !!loadingOverlay,
-                        mainContent: !!mainContent,
-                        setupModal: !!setupModal,
-                        chatContainer: !!chatContainer
-                    });
-                    return;
-                }
-
-                loadingOverlay.style.display = "flex";
-                mainContent.style.display = "none";
-                loadingOverlay.querySelector(".loading-text").textContent = "Resetting...";
-                console.log("UI updated: Loading shown, Main hidden"); // Debug Step 2
-
-                try {
-                    const response = await fetch("/reset-chat", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" }
-                    });
-                    console.log("Fetch response status:", response.status); // Debug Step 3
-
-                    if (!response.ok) {
-                        throw new Error("Reset request failed with status: " + response.status);
-                    }
-
-                    const data = await response.json();
-                    console.log("Response data:", data); // Debug Step 4
-
-                    chatContainer.innerHTML = "";
-                    console.log("Chat cleared"); // Debug Step 5
-
-                    loadingOverlay.style.display = "none";
-                    setupModal.style.display = "flex";
-                    console.log("UI updated: Loading hidden, Setup shown"); // Debug Step 6
-                } catch (error) {
-                    console.error("Reset error:", error);
-                    loadingOverlay.querySelector(".loading-text").textContent = `Error: ${error.message}`;
-                    setTimeout(() => {
-                        loadingOverlay.style.display = "none";
-                        mainContent.style.display = "block";
-                    }, 2000);
-                }
-            });
         });
-
-
-
 
         // Voice recording logic
         let mediaRecorder;
