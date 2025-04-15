@@ -279,15 +279,6 @@
             text-align: center;
         }
 
-        .reset-button {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
-            cursor: pointer;
-        }
-
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -373,14 +364,6 @@
         }
 
 
-        .reset-button {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            padding: 8px 12px;
-            cursor: pointer;
-        }
 
         /* Existing styles remain unchanged, add these at the end of your <style> tag */
 
@@ -537,7 +520,6 @@
     <div id="mainContent" class="main-content">
         <div class="header">
             <h1>Interview Chatbot</h1>
-            <button id="resetChat" class="reset-button">Reset Interview</button>
         </div>
         <div class="chat-container" id="chatContainer"></div>
 
@@ -841,161 +823,7 @@
             chatContainer.scrollTop = chatContainer.scrollHeight;
         }
 
-        document.getElementById("startRecording").addEventListener("click", async () => {
-            try {
-                let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
-                audioChunks = [];
-
-                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
-                mediaRecorder.onstop = async () => {
-                    let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-                    let formData = new FormData();
-                    formData.append("file", audioBlob, "recording.wav");
-
-                    try {
-                        let response = await fetch("/talk", { method: "POST", body: formData });
-                        const data = await response.json();
-                        addMessageToChat(data.transcription, true);
-                        addMessageToChat(data.response, false, data.audio_url);
-
-                        if (data.audio_url) {
-                            let audio = document.getElementById("audioPlayback");
-                            audio.src = data.audio_url;
-                            audio.play().catch(err => console.error("Audio playback error:", err));
-                        }
-                    } catch (error) {
-                        console.error("Error processing audio:", error);
-                        addMessageToChat(`Error: ${error.message}`, false);
-                    }
-                };
-
-                document.getElementById("startRecording").textContent = "Recording...";
-                document.getElementById("startRecording").disabled = true;
-                document.getElementById("stopRecording").disabled = false;
-            } catch (error) {
-                console.error("Microphone access denied:", error);
-                addMessageToChat("Error: Microphone access denied.", false);
-            }
-        });
-        document.getElementById("stopRecording").addEventListener("click", () => {
-            mediaRecorder.stop();
-            document.getElementById("startRecording").textContent = "🎤"; // Reset to mic icon
-            document.getElementById("startRecording").disabled = false;
-            document.getElementById("stopRecording").disabled = true;
-        });
-        // Allow sending with Enter key
-        document.getElementById("sendMessage").addEventListener("click", async () => {
-            const textInput = document.getElementById("textInput");
-            const userMessage = textInput.value.trim();
-
-            if (userMessage) {
-                addMessageToChat(userMessage, true); // Display user message
-                textInput.value = ""; // Clear input
-                addAnalyzingMessage(); // Show "Analyzing..."
-
-                try {
-                    const response = await fetch("/text-input", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ message: userMessage })
-                    });
-                    if (!response.ok) throw new Error("Failed to send message");
-
-                    const data = await response.json();
-                    removeAnalyzingMessage(); // Remove "Analyzing..."
-                    addMessageToChat(data.response, false, data.audio_url);
-
-                    if (data.audio_url) {
-                        let audio = document.getElementById("audioPlayback");
-                        audio.src = data.audio_url;
-                        audio.play().catch(err => {
-                            console.error("Audio playback error:", err);
-                            addMessageToChat("Audio playback failed.", false);
-                        });
-                    }
-                } catch (error) {
-                    console.error("Error sending message:", error);
-                    removeAnalyzingMessage();
-                    addMessageToChat(`Error: ${error.message}`, false);
-                }
-            }
-        });
-
-        // Reset chat
-        document.getElementById("resetChat").addEventListener("click", async () => {
-            // Show loading overlay while resetting
-            document.getElementById("loadingOverlay").style.display = "flex";
-            document.getElementById("mainContent").style.display = "none";
-
-            try {
-                const response = await fetch("/reset-chat", {
-                    method: "POST"
-                });
-
-                if (response.ok) {
-                    // Clear chat container
-                    document.getElementById("chatContainer").innerHTML = '';
-                    // Start a new interview
-                    await startNewInterview();
-                }
-            } catch (error) {
-                console.error("Error resetting chat:", error);
-
-                // Hide loading screen after timeout even on error
-                setTimeout(() => {
-                    document.getElementById("loadingOverlay").style.display = "none";
-                    document.getElementById("mainContent").style.display = "block";
-                }, 5000);
-            }
-        });
-
-        // Voice recording logic
-        let mediaRecorder;
-        let audioChunks = [];
-        document.getElementById("startRecording").addEventListener("click", async () => {
-            console.log("Mic button clicked!");
-            try {
-                let stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                mediaRecorder = new MediaRecorder(stream);
-                mediaRecorder.start();
-                audioChunks = [];
-
-                mediaRecorder.ondataavailable = event => audioChunks.push(event.data);
-                mediaRecorder.onstop = async () => {
-                    let audioBlob = new Blob(audioChunks, { type: "audio/wav" });
-                    let formData = new FormData();
-                    formData.append("file", audioBlob, "recording.wav");
-
-                    addAnalyzingMessage(); // Show "Analyzing..." after stopping
-
-                    try {
-                        let response = await fetch("/talk", { method: "POST", body: formData });
-                        const data = await response.json();
-                        removeAnalyzingMessage(); // Remove "Analyzing..."
-                        addMessageToChat(data.transcription, true);
-                        addMessageToChat(data.response, false, data.audio_url);
-                        if (data.audio_url) {
-                            let audio = document.getElementById("audioPlayback");
-                            audio.src = data.audio_url;
-                            audio.play();
-                        }
-                    } catch (error) {
-                        console.error("Error processing audio:", error);
-                        removeAnalyzingMessage();
-                        addMessageToChat(`Error: ${error.message}`, false);
-                    }
-                };
-
-                document.getElementById("startRecording").textContent = "Recording...";
-                document.getElementById("startRecording").disabled = true;
-                document.getElementById("stopRecording").disabled = false;
-            } catch (error) {
-                console.error("Microphone error:", error.name, error.message);
-                addMessageToChat(`Error: ${error.name} - ${error.message}`, false);
-            }
-        });
+        
     </script>
 </body>
 
