@@ -1,2 +1,6 @@
 venv/
 .env
+database.json 
+__pycache__/
+uploads/
+.venv/
