@@ -503,7 +503,7 @@ def reset_chat():
 def transcribe_audio(file):
     filepath = f"./{file.filename}"
     file.save(filepath)
-    transcript = model.transcribe(filepath)
+    transcript = Whisper_Model.transcribe(filepath)
     os.remove(filepath)
     return transcript["text"]
 
